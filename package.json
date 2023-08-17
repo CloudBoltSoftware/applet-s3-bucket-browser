@@ -1,11 +1,11 @@
 {
-  "name": "cui-applet",
+  "name": "cui-s3-bucket-manager-applet",
   "xuiConfig": {
-    "name": "cui-applet",
-    "id": "APL-12345678",
-    "icon": "xui/src/cui-applet.png",
-    "met_description": "Hello World applet for extending the CloudBolt CUI",
-    "met_label": "CUI Applet Hello World",
+    "name": "cui-s3-bucket-manager-applet",
+    "id": "APL-00000001",
+    "icon": "xui/src/Icons_Storage_S3.png",
+    "met_description": "S3 Bucket Browser extending the CloudBolt CUI",
+    "met_label": "S3 Bucket Browser Applet",
     "met_is_applet": true,
     "met_entry_point": "static/main.es.js",
     "met_maximum_version_required": "",
@@ -15,35 +15,33 @@
         "name": "cui",
         "minimum_version": "2023.3.58",
         "maximum_version": ""
+      },
+      {
+        "name": "s3_file_manager",
+        "minimum_version": "1.0",
+        "maximum_version": ""
       }
     ],
     "met_targets": {
       "cui": {
-        "fullPage": [{"slug": "my-url"}],
-        "resourcesDetailsPaneDiskList": ["preTable", "postTable", "expandedCellFoot"],
-        "resourcesDetailsPaneNetworks": ["preTable", "postTable", "expandedCellHead"],
-        "resourceDetailsDiskList": ["preTable", "postTable", "expandedCellFoot"],
-        "resourceDetailsNetworks": ["preTable", "postTable", "expandedCellHead"],
+        "fullPage": [
+          {
+            "slug": "s3-browser"
+          }
+        ],
         "resourceDetailsTabs": [
           {
             "resourceTypes": [
-              "service",
-              "server"
+              "s3_bucket"
             ],
-            "label": "Additional Info"
+            "label": "S3 Bucket Browser"
           }
-        ],
-        "catalog": [
-          "headerLoggedIn"
-        ],
-        "all": [
-          "preNavItems"
         ]
       }
     }
   },
   "version": "0.1.0",
-  "description": "Template for creating a CloudBolt CB applet",
+  "description": "S3 File Manager converted to a CloudBolt applet",
   "type": "module",
   "files": [
     "dist"
@@ -65,6 +63,7 @@
     "test": "echo \"Error: no test runner specified. CloudBolt suggests using vitest.\" && exit 1"
   },
   "dependencies": {
+    "@vueuse/core": "^10.3.0",
     "camelcase": "^7.0.1",
     "vuetify": "^3.1.13"
   },
