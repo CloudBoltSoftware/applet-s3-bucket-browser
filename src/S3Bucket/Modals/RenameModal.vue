@@ -35,36 +35,25 @@
 </template>
     
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, inject, ref, toValue, watch } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 
 /**
  * @typedef {Object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
  * @property {Object} Props.name - The selected S3 Bucket item's name
- * @property {Object} Props.resource - The S3 Bucket resource
- * @property {String} Props.path - The selected S3 Bucket item's current full path
  */
 /** @type {Props} */
 
 const props = defineProps({
-  api: {
-    type: Object,
-    required: true,
-  },
   name: {
     type: String,
     required: true
-  },
-  resource: {
-    type: Object,
-    default: () => {}
-  },
-  path: {
-    type: String,
-    default: ''
-  },
+  }
 });
+
+const resource = toValue(inject('resource'))
+const path = inject('path')
+const api = inject('api')
 
 const emit = defineEmits(["update:refreshResource"]);
 const isSubmitting = ref(false)
@@ -77,8 +66,8 @@ const renameNew = ref('')
 const renameForm = computed(() => ({  
   old_object_name: renameOld.value,
   new_object_name: renameNew.value,
-  path: props.path,
-  bucket_name: props.resource.name})
+  path: path.value,
+  bucket_name: resource.name})
 ) 
 
 const requiredRule = [
@@ -104,14 +93,12 @@ async function renameObject() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    const response = await props.api.base.instance.post(`http://localhost:8001/ajax/s3-rename-object/${props.resource.id}/`,  formData)
-    console.log("Rename Object ", {response})
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-rename-object/${resource.id}/`,  formData)
     isSubmitting.value = false
     renameDialog.value = false
     emit("update:refreshResource");
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    console.error(error);
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
     formIsValid.value = false
     isSubmitting.value = false

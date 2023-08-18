@@ -14,10 +14,10 @@
       <VCardText class="pt-0">
         <VWindow v-model="tab">
           <VWindowItem value="overview">
-            <OverviewTab :source-item="sourceItem" :location="location" />
+            <OverviewTab :source-item="sourceItem"  />
           </VWindowItem>
           <VWindowItem value="versions">
-            <VersionTab :api="api" :source-item="sourceItem" :location="location" :resource="resource" :refresh-resource="refreshResource"/>
+            <VersionTab :source-item="sourceItem" :refresh-resource="refreshResource"/>
           </VWindowItem>
         </VWindow>
       </VCardText>
@@ -35,30 +35,15 @@ import VersionTab from '../Components/VersionTab.vue';
 
 /**
  * @typedef {Object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
  * @property {Object} Props.sourceItem - The selected S3 Bucket item
- * @property {String} Props.location - The selected S3 Bucket location
- * @property {Object} Props.resource - The S3 Bucket resource
  * @property {Function} Props.refreshResource - Function to fetch the selected S3 Bucket
  */
 /** @type {Props} */
 
 defineProps({
-  api: {
-    type: Object,
-    required: true,
-  },
   sourceItem: {
     type: Object,
     default: () => {}
-  },
-  location: {
-    type: String,
-    default: '',
-  },
-  resource: {
-    type: Object,
-    default: () => {},
   },
   refreshResource: {
     type: Function,

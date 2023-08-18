@@ -11,8 +11,8 @@
         <VBtn icon="mdi-close" title="Close this dialog" data-dismiss="modal" variant="text" @click="uploadDialog = false"/>
       </VCardTitle>
       <VCardActions class="d-flex justify-center ma-2">
-        <FileUpload :api="api" :resource="resource" :path="path" @update:closeDialog="uploadDialog = false" @update:submitted="refreshResource" />
-        <FolderUpload :api="api" :resource="resource" :path="path" @update:closeDialog="uploadDialog = false" @update:submitted="refreshResource"/>
+        <FileUpload @update:closeDialog="uploadDialog = false" @update:submitted="refreshResource" />
+        <FolderUpload @update:closeDialog="uploadDialog = false" @update:submitted="refreshResource"/>
       </VCardActions>
     </VCard>
   </VDialog>
@@ -25,25 +25,10 @@ import FolderUpload from "../Components/FolderUpload.vue";
 
 /**
  * @typedef {Object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
- * @property {String} Props.path - The S3 Bucket item's full path
- * @property {Object} Props.resource - The S3 Bucket resource
  * @property {Function} Props.refreshResource - Function to re-fetch the S3 Bucket data
  */
 /** @type {Props} */
 defineProps({
-  api: {
-    type: Object,
-    required: true,
-  },
-  path: {
-    type: String,
-    default: ''
-  },
-  resource: {
-    type: Object,
-    default: () => {}
-  },
   refreshResource: {
     type: Function,
     default: () => {},

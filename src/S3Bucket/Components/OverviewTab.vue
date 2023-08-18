@@ -53,7 +53,7 @@
 </template>
     
 <script setup>
-import { computed } from "vue";
+import { computed, inject } from "vue";
 /**
  * @typedef {Object} sourceItem
  * @property {String} owner_name
@@ -72,7 +72,6 @@ import { computed } from "vue";
 /**
  * @typedef {Object} Props
  * @property {Object} Props.sourceItem - The selected S3 Bucket item
- * @property {String} Props.location - The selected S3 Bucket location
  */
 /** @type {Props} */
 
@@ -80,13 +79,10 @@ const props = defineProps({
   sourceItem: {
     type: Object,
     default: () => {}
-  },
-  location: {
-    type: String,
-    default: '',
   }
 });
 
+const location = inject('location')
 const eTag = computed(() => props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : '')
 </script>
 <style scoped></style>

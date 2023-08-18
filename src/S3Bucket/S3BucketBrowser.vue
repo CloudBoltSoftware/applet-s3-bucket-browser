@@ -18,21 +18,19 @@
         @update:modelValue="getResourceSelection"
       />
     </div>
-    <VProgressLinear v-if="!bucketDetails && isLoading" indeterminate class="mt-3" color="blue-darken-4" rounded />
+    <VProgressLinear v-if="!bucketResource && isLoading" indeterminate class="mt-3" color="blue-darken-4" rounded />
+    <VAlert v-if="bucketError" closable type="error" icon="mdi-alert-circle" :text="bucketError" />
     <BucketDisplay 
-      v-if="bucketDetails"
-      :api="api"
+      v-if="bucketResource"
+      :state="bucketState"
       :is-flat="isFlat"
-      :location="bucketDetails?.location"
-      :resource="bucketDetails?.resource"
-      :state="bucketDetails?.state"
-      :update-resource-selection="updateResourceSelection"
+      @update:resource="(res) => updateResourceSelection(res)"
       @update:updateFlatten="() => isFlat = !isFlat" />
   </VSheet>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, provide, ref, watch } from "vue";
 import avatarUrl from '../assets/Icons_Storage_S3.png';
 import BucketDisplay from './BucketDisplay.vue';
 /**
@@ -53,10 +51,18 @@ const props = defineProps({
 });
 
 const buckets = ref()
-const bucketDetails = ref()
+const bucketState = ref()
+const bucketLocation = ref()
+const bucketResource = ref()
+const bucketPath = ref()
+const bucketError = ref()
 const isFlat = ref()
 const isLoading = ref(false)
 const preLoadedResource = computed(() => buckets.value && props.context.resource && buckets.value.find((bucket) => bucket.name === props.context.resource.name))
+provide('api', props.api)
+provide('location', bucketLocation)
+provide('resource', bucketResource)
+provide('path', bucketPath)
 
 //  TODO CMP-54 Handle CSRF Token
 // Currently users must visit the dashboard before the CUI
@@ -65,18 +71,17 @@ if (token) {
   // eslint-disable-next-line vue/no-mutating-props
   props.api.base.instance.defaults.headers.common['X-CSRFTOKEN'] = token
 } else {
-  console.log('Error, no token found. Please navigate to the dashboard to automatically set the token before returning to the CUI')
+  bucketError.value = 'Error, no token found. Please navigate to the dashboard to automatically set the token before returning to the CUI'
 }
 
 const getBuckets = async () => {
   try {
     const response = await props.api.base.instance.get('http://localhost:8001/ajax/s3-list-buckets/')
     buckets.value = response.data.bucket_info
-    console.log('getBuckets', buckets.value)
+    bucketError.value = ''
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    // In this case, we'll just log the error to the console.
-    console.log({error})
+    bucketError.value = `(${error.code}) ${error.name}: ${error.message}`
   }
 }
 
@@ -84,20 +89,24 @@ const getResourceSelection = async (resource) => {
   try {
     isLoading.value = true
     const response = await props.api.base.instance.get(`http://localhost:8001/ajax/s3-browser-info/${resource.id}/`)
-    console.log('getResourceSelection', {response})
-    bucketDetails.value = response.data
+    bucketLocation.value = response.data.location
+    bucketResource.value = response.data.resource
+    bucketState.value = response.data.state
+    bucketPath.value = response.data.state.full_path
     isFlat.value = response.data.state.flat
     isLoading.value = false
+    bucketError.value = ''
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    // In this case, we'll just log the error to the console.
-    console.log({error})
+    bucketError.value = `(${error.code}) ${error.name}: ${error.message}`
   }
 }
 
 const updateResourceSelection = async (newResource) => {
-  console.log('updateResourceSelection', {newResource})
-  bucketDetails.value = newResource
+  bucketLocation.value = newResource.location
+  bucketResource.value = newResource.resource
+  bucketState.value = newResource.state
+  bucketPath.value = newResource.state.full_path
 }
 
 onMounted(getBuckets)

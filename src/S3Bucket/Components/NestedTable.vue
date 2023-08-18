@@ -38,9 +38,9 @@
       <td v-if="item.raw.is_file" class="d-inline-flex">
         <VBtnGroup>
           <VBtn v-if="isVersionMode" icon="mdi-file-download" title="Download" :disabled="item.raw.is_delete_marker" @click="downloadFile(item.raw.download_url)"/>
-          <RestoreButton v-if="isVersionMode" :resource-id="resource.id" :api="api" :item="item.raw" @update:refreshResource="refreshResource"/>
-          <RenameModal :api="api" :name="item.raw.name" :resource="resource" :path="state.full_path" @update:refreshResource="refreshResource"/>
-          <OverviewModal :api="api" :source-item="item.raw" :location="location" :resource="resource" :refresh-resource="refreshResource"/>
+          <RestoreButton v-if="isVersionMode" :item="item.raw" @update:refreshResource="refreshResource"/>
+          <RenameModal :name="item.raw.name" @update:refreshResource="refreshResource"/>
+          <OverviewModal :source-item="item.raw" :refresh-resource="refreshResource"/>
         </VBtnGroup>
       </td>
     </template>
@@ -68,7 +68,7 @@
         <td>        
           <VBtnGroup>
             <VBtn icon="mdi-file-download" title="Download" :disabled="entry.is_delete_marker"  @click="downloadFile(entry.download_url)"/>
-            <RestoreButton :id="resource.id" :api="api" :item="entry" @update:refreshResource="refreshResource"/>
+            <RestoreButton :item="entry" @update:refreshResource="refreshResource"/>
           </VBtnGroup>
         </td>
         <td></td>
@@ -85,43 +85,23 @@ import FolderButton from "./FolderButton.vue";
 import RestoreButton from "./RestoreButton.vue";
 /**
  * @typedef {Object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
- * @property {String} Props.location - The S3 Bucket location
- * @property {Object} Props.resource - The S3 Bucket resource
  * @property {Boolean} Props.isLoading - Loading data response
- * @property {Object} Props.state - The S3 Bucket state data
  * @property {Boolean} Props.isVersionMode - Boolean if Bucket Version mode is on
- * @property {Array} Props.dataTableItems - The array of the items for the dataTable
+ * @property {Array} Props.dataTableItems - The array of all the items for the dataTable
  * @property {Array} Props.selectedItems - The array of the selected dataTable items
+ * @property {Function} Props.fetchSelection - Function to fetch the selection
  * @property {Function} Props.updatedSelectedItems - Function to update the array of the selected table items
  * @property {Function} Props.refreshResource - Function to refresh the current selected S3 Bucket
- * @property {Function} Props.fetchSelection - Function to fetch the selection
  */
 /** @type {Props} */
 defineProps({
-  api: {
-    type: Object,
-    required: true,
-  },
-  location: {
-    type: String,
-    default: '',
-  },
   isLoading: {
     type: Boolean,
     default: false,
   },
-  resource: {
-    type: Object,
-    default: () => {},
-  },
   isVersionMode: {
     type: Boolean,
     default: false,
-  },
-  state: {
-    type: Object,
-    default: () => {},
   },
   dataTableItems: {
     type: Array,

@@ -29,42 +29,18 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { inject, ref, toValue } from "vue";
 import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
-/**
- * @typedef {Object} resource
- * @property {String} name
- * @property {String} id
- */
-/**
- * @typedef {object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
- * @property {String} Props.path - The S3 Bucket item's full path
- * @property {Object} Props.resource - The S3 Bucket resource
- * 
- */
-/** @type {Props} */
-const props = defineProps({
-  api: {
-    type: Object,
-    required: true,
-  },
-  path: {
-    type: String,
-    default: ''
-  },
-  resource: {
-    type: Object,
-    default: () => {}
-  }
-});
+const api = inject('api')
+const path = inject('path')
+const resource = toValue(inject('resource'))
 
 const emit = defineEmits(["update:closeDialog", "update:submitted"]);
 const isUploading = ref(false)
 const uploadFile = ref([])
 const uploadFileForm = ref({
-  bucket_name: props.resource.name,
-  path: props.path
+  bucket_name: resource.name,
+  path: path.value
 }) 
 const formIsValid = ref(false)
 const formError = ref()
@@ -85,16 +61,14 @@ async function fileUploadModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    const response = await props.api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-object/${props.resource.id}/`,  formData)
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-object/${resource.id}/`,  formData)
     emit("update:submitted")
     isUploading.value = false
-    console.log('Upload File ', {response})
     emit("update:closeDialog");
     fileDialog.value = false
     uploadFile.value = []
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    console.error(error);
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
     formIsValid.value = false
     isUploading.value = false
