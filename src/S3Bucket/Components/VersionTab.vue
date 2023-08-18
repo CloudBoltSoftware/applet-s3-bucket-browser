@@ -45,6 +45,11 @@
         {{ new Date(item.raw.last_modified).toLocaleTimeString('en-US') }}   {{ new Date(item.raw.last_modified).toDateString() }}
       </template> 
       <template #[`item.actions`]="{ item }">
+        <VTooltip location="start" :text="formError" >
+          <template #activator="{ props: activatorProps }">
+            <VIcon v-if="formError" v-bind="activatorProps" color="error" size="large" icon="mdi-alert-circle" class="mt-1"/>
+          </template>
+        </VTooltip>
         <VBtnGroup>
           <VBtn icon="mdi-file-download" title="Download" @click="() => downloadFile(item.raw.download_url)"/>
           <RestoreButton :id="resource.id" :api="api" :item="item.raw" @update:refreshResource="refreshResource"/>
@@ -55,7 +60,7 @@
 </template>
     
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 import RestoreButton from "./RestoreButton.vue";
 
@@ -93,6 +98,7 @@ const props = defineProps({
 });
 // TODO CMP-127 - Re-enable once Version updates are fixed. Update to handle versioning
 const isLoading = ref(false)
+const formError = ref()
 const versionInfo = ref()
 const versionMessage = ref('')
 
@@ -121,27 +127,22 @@ const fetchVersionInfo = async () => {
   try {
     const formData = convertObjectToFormData(versionForm.value)
     const response = await props.api.base.instance.post(`http://localhost:8001/ajax/s3-get-versions/${props.resource.id}/`, formData)
-    console.log('Fetch Version Info ',{response})
     isLoading.value = false
     versionInfo.value = response.data
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    // In this case, we'll just log the error to the console.
-    console.log({error})
+    formError.value = `(${error.code}) ${error.name}: ${error.message}`
   }
-
 }
 
 const enableVersioning = async () => {
   try {
     const formData = convertObjectToFormData(versionEnableForm.value)
     const response = await props.api.base.instance.post(`http://localhost:8001/ajax/s3-enable-versioning/${props.resource.id}/`, formData)
-    console.log('Enable Versioning ', {response})
     versionMessage.value = response.data.message
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    // In this case, we'll just log the error to the console.
-    console.log({error})
+    formError.value = `(${error.code}) ${error.name}: ${error.message}`
   }
 }
 
@@ -153,5 +154,6 @@ const downloadFile = (url) => {
 }
 
 onMounted(fetchVersionInfo)
+onUnmounted(formError.value = '')
 </script>
 <style scoped></style>

@@ -74,7 +74,6 @@ defineProps({
 const emit = defineEmits([
   "configure",
 ]);
-
 /**
  * Example for how to emit the configure event. (uses `ref` - read more about that in MainView.vue)
  * Change shouldRemove to `true` to see it in action.

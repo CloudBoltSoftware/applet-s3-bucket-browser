@@ -6,7 +6,7 @@
     <VCard class="pa-3">
       <VForm @submit.prevent="submitCreateModal" @update:model-value="(val) => formIsValid = val">
         <VCardTitle class="w-100 d-inline-flex justify-space-between text-h5">
-          <div>Create folder at <span class="font-italic">{{ state.full_path ? state.full_path : 'Root folder'}}</span></div>
+          <div>Create folder at <span class="font-italic">{{ path ? path : 'Root folder'}}</span></div>
           <VBtn icon="mdi-close" title="Close this dialog" variant="text" @click="onCancel"/>
         </VCardTitle>
         <VCardText>
@@ -42,36 +42,19 @@
 </template>
     
 <script setup>
-import { computed, ref } from "vue";
+import { computed, inject, ref, toValue } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
-/**
- * @typedef {Object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
- * @property {Object} Props.state - The selected S3 Bucket state
- * @property {Object} Props.resource - The S3 Bucket resource
- */
-/** @type {Props} */
-const props = defineProps({
-  api: {
-    type: Object,
-    required: true,
-  },
-  state: {
-    type: Object,
-    default: () => {}
-  },
-  resource: {
-    type: Object,
-    default: () => {}
-  }
-});
+
+const api = inject('api')
+const path = inject('path')
+const resource = toValue(inject('resource'))
 
 const emit = defineEmits(["update:refreshResource"]);
 const newFolder = ref('')
 const createFolderForm = computed(() => ({
   folder_name: newFolder.value,
-  path: props.state.full_path,
-  bucket_name: props.resource.name
+  path: path.value,
+  bucket_name: resource.name
   })
 ) 
 
@@ -96,15 +79,13 @@ async function submitCreateModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    const response = await props.api.base.instance.post(`http://localhost:8001/ajax/s3-create-folder/${props.resource.id}/`,  formData)
-    console.log("Create New Folder ", {response})
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-create-folder/${resource.id}/`,  formData)
     isSubmitting.value = false
     createDialog.value = false
     newFolder.value = ''
     emit("update:refreshResource");
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    console.error(error);
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
     formIsValid.value = false
     isSubmitting.value = false
