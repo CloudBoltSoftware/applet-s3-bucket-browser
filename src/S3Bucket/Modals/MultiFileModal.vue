@@ -52,7 +52,7 @@ const props = defineProps({
 });
 const api = inject('api')
 const resource = toValue(inject('resource'))
-const emit = defineEmits(["update:submitted", "update:clear"]);
+const emit = defineEmits(["update:refresh", "update:clear"]);
 const isUploading = ref(false)
 const uploadFile = ref([])
 const formIsValid = ref(false)
@@ -84,7 +84,7 @@ async function multiFileUploadModal() {
       // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
       await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-object/${resource.id}/`,  formData)
     }
-    emit("update:submitted")
+    emit("update:refresh")
     emit("update:clear")
     isUploading.value = false
     fileDialog.value = false

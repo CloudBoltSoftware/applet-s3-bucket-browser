@@ -5,7 +5,7 @@
   >
     <VBreadcrumbsItem v-for="(entry, idx) in breadcrumbs" :key="entry.title">
       <div v-if="entry.disabled" class="text-grey-darken-3 text-none text-h6">{{ entry.title }}</div>
-      <VBtn v-else class="text-blue-darken-3 text-none text-h6 px-0" variant="plain" @click="fetchSelection(entry.path)" >{{ entry.title }}</VBtn>
+      <VBtn v-else class="text-blue-darken-3 text-none text-h6 px-0" variant="plain" @click="emit('update:fetch', entry.path)" >{{ entry.title }}</VBtn>
       <VBreadcrumbsDivider v-if="breadcrumbs.length - 1 > idx && breadcrumbs.length > 1" class="pr-0">
         <VIcon icon="mdi-slash-forward" />
       </VBreadcrumbsDivider>
@@ -20,7 +20,6 @@ import { VBreadcrumbsItem } from "vuetify/lib/components/index.mjs";
  * @typedef {Object} Props
  * @property {Object} Props.name - The S3 Bucket name
  * @property {Object} Props.state - The S3 Bucket state
- * @property {Function} Props.fetchSelection - Function to fetch the selected S3 Bucket path
  */
 /** @type {Props} */
 const props = defineProps({
@@ -31,13 +30,10 @@ const props = defineProps({
   state: {
     type: Object,
     default: () => {},
-  },
-  fetchSelection: {
-    type: Function,
-    default: () => {},
   }
 });
 
+const emit = defineEmits(["update:fetch"]);
 const breadcrumbs = computed(() => {
   let crumbsArray = [{
     title: props.name,

@@ -28,7 +28,7 @@ const resource = toValue(inject('resource'))
 const api = inject('api')
 const restoreError = ref()
 
-const emit = defineEmits(["update:refreshResource"]);
+const emit = defineEmits(["update:refresh"]);
 // TODO CMP-127 - This button requires versioning and additional work 
 // Currently is disabled in the example
 const retoreItemForm = computed(() => ({
@@ -43,7 +43,7 @@ const restoreItem = async () => {
   try {
     const formData = convertObjectToFormData(retoreItemForm.value)
     await api.base.instance.post(`http://localhost:8001/ajax/s3-promote-version/${resource.id}/`, formData)
-    emit("update:refreshResource");
+    emit("update:refresh");
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     restoreError.value = `(${error.code}) ${error.name}: ${error.message}`

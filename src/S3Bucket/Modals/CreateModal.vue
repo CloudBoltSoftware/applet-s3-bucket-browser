@@ -49,7 +49,7 @@ const api = inject('api')
 const path = inject('path')
 const resource = toValue(inject('resource'))
 
-const emit = defineEmits(["update:refreshResource"]);
+const emit = defineEmits(["update:refresh"]);
 const newFolder = ref('')
 const createFolderForm = computed(() => ({
   folder_name: newFolder.value,
@@ -83,7 +83,7 @@ async function submitCreateModal() {
     isSubmitting.value = false
     createDialog.value = false
     newFolder.value = ''
-    emit("update:refreshResource");
+    emit("update:refresh");
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`

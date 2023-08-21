@@ -52,7 +52,7 @@ const props = defineProps({
 });
 const api = inject('api')
 const resource = toValue(inject('resource'))
-const emit = defineEmits(["update:refreshResource"]);
+const emit = defineEmits(["update:refresh"]);
 
 const deleteDialog = ref(false)
 const formError = ref()
@@ -89,7 +89,7 @@ async function deleteModal() {
     await api.base.instance.post(`http://localhost:8001/ajax/s3-delete-file/${resource.id}/`,  formData)
     isDeleting.value = false
     deleteDialog.value = false
-    emit("update:refreshResource");
+    emit("update:refresh");
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     // In this case, we'll just log the error to the console.

@@ -11,30 +11,20 @@
         <VBtn icon="mdi-close" title="Close this dialog" data-dismiss="modal" variant="text" @click="uploadDialog = false"/>
       </VCardTitle>
       <VCardActions class="d-flex justify-center ma-2">
-        <FileUpload @update:closeDialog="uploadDialog = false" @update:submitted="refreshResource" />
-        <FolderUpload @update:closeDialog="uploadDialog = false" @update:submitted="refreshResource"/>
+        <FileUpload @update:closeDialog="uploadDialog = false" @update:refresh="emit('update:refresh')" />
+        <FolderUpload @update:closeDialog="uploadDialog = false" @update:refresh="emit('update:refresh')" />
       </VCardActions>
     </VCard>
   </VDialog>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import FileUpload from "../Components/FileUpload.vue";
 import FolderUpload from "../Components/FolderUpload.vue";
 
-/**
- * @typedef {Object} Props
- * @property {Function} Props.refreshResource - Function to re-fetch the S3 Bucket data
- */
-/** @type {Props} */
-defineProps({
-  refreshResource: {
-    type: Function,
-    default: () => {},
-  },
-});
-
+const path = inject('path')
 const uploadDialog = ref(false)
+const emit = defineEmits(["update:refresh"]);
 </script>
 <style scoped></style>

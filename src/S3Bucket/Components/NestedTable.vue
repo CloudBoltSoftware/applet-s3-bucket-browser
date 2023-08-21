@@ -26,7 +26,7 @@
         <FolderButton 
         v-if="!item.raw.is_file"
         :item="item.raw"
-        :fetch-selection="fetchSelection"
+        @update:fetch="(val) => emit('update:fetch', val)"
         />
         <div v-else class="ml-4">{{ item.raw.name }}</div>
       </td>
@@ -38,9 +38,9 @@
       <td v-if="item.raw.is_file" class="d-inline-flex">
         <VBtnGroup>
           <VBtn v-if="isVersionMode" icon="mdi-file-download" title="Download" :disabled="item.raw.is_delete_marker" @click="downloadFile(item.raw.download_url)"/>
-          <RestoreButton v-if="isVersionMode" :item="item.raw" @update:refreshResource="refreshResource"/>
-          <RenameModal :name="item.raw.name" @update:refreshResource="refreshResource"/>
-          <OverviewModal :source-item="item.raw" :refresh-resource="refreshResource"/>
+          <RestoreButton v-if="isVersionMode" :item="item.raw" @update:refresh="emit('update:refresh')"/>
+          <RenameModal :name="item.raw.name" @update:refresh="emit('update:refresh')"/>
+          <OverviewModal :source-item="item.raw" @update:refresh="emit('update:refresh')"/>
         </VBtnGroup>
       </td>
     </template>
@@ -68,7 +68,7 @@
         <td>        
           <VBtnGroup>
             <VBtn icon="mdi-file-download" title="Download" :disabled="entry.is_delete_marker"  @click="downloadFile(entry.download_url)"/>
-            <RestoreButton :item="entry" @update:refreshResource="refreshResource"/>
+            <RestoreButton :item="entry" @update:refresh="emit('update:refresh')"/>
           </VBtnGroup>
         </td>
         <td></td>
@@ -89,9 +89,7 @@ import RestoreButton from "./RestoreButton.vue";
  * @property {Boolean} Props.isVersionMode - Boolean if Bucket Version mode is on
  * @property {Array} Props.dataTableItems - The array of all the items for the dataTable
  * @property {Array} Props.selectedItems - The array of the selected dataTable items
- * @property {Function} Props.fetchSelection - Function to fetch the selection
  * @property {Function} Props.updatedSelectedItems - Function to update the array of the selected table items
- * @property {Function} Props.refreshResource - Function to refresh the current selected S3 Bucket
  */
 /** @type {Props} */
 defineProps({
@@ -111,22 +109,14 @@ defineProps({
     type: Array,
     default: () => [],
   },
-  fetchSelection: {
-    type: Function,
-    default: () => {},
-  },
   updatedSelectedItems: {
     type: Function,
     default: () => {},
-  },
-  refreshResource: {
-    type: Function,
-    default: () => {},
-  },
+  }
 });
 
 const expanded = ref([])
-const emit = defineEmits(["update:items"]);
+const emit = defineEmits(["update:items", "update:fetch", "update:refresh"]);
 
 const headers = [
   { title: 'Name', align: 'start', key: 'name' },

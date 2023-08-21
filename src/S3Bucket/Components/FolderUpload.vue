@@ -35,7 +35,7 @@ const api = inject('api')
 const path = inject('path')
 const resource = toValue(inject('resource'))
 
-const emit = defineEmits(["update:closeDialog", "update:submitted"]);
+const emit = defineEmits(["update:closeDialog", "update:refresh"]);
 const isUploading = ref(false)
 const uploadFolder = ref()
 const uploadFolderForm = ref({
@@ -62,11 +62,11 @@ async function folderUploadModal() {
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
     await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-folder/${resource.id}/`,  formData)
-    emit("update:submitted")
     isUploading.value = false
-    emit("update:closeDialog");
     folderDialog.value = false
     uploadFolder.value = []
+    emit("update:refresh")
+    emit("update:closeDialog");
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
