@@ -55,7 +55,7 @@ const resource = toValue(inject('resource'))
 const path = inject('path')
 const api = inject('api')
 
-const emit = defineEmits(["update:refreshResource"]);
+const emit = defineEmits(["update:refresh"]);
 const isSubmitting = ref(false)
 const renameDialog = ref(false)
 const formIsValid = ref(false)
@@ -96,7 +96,7 @@ async function renameObject() {
     await api.base.instance.post(`http://localhost:8001/ajax/s3-rename-object/${resource.id}/`,  formData)
     isSubmitting.value = false
     renameDialog.value = false
-    emit("update:refreshResource");
+    emit("update:refresh");
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`

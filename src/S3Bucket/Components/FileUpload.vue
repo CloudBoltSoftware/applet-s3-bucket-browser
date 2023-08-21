@@ -35,7 +35,7 @@ const api = inject('api')
 const path = inject('path')
 const resource = toValue(inject('resource'))
 
-const emit = defineEmits(["update:closeDialog", "update:submitted"]);
+const emit = defineEmits(["update:closeDialog", "update:refresh"]);
 const isUploading = ref(false)
 const uploadFile = ref([])
 const uploadFileForm = ref({
@@ -62,7 +62,7 @@ async function fileUploadModal() {
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
     await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-object/${resource.id}/`,  formData)
-    emit("update:submitted")
+    emit("update:refresh")
     isUploading.value = false
     emit("update:closeDialog");
     fileDialog.value = false

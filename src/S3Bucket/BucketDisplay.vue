@@ -3,16 +3,16 @@
     <BucketBreadcrumbs 
       :state="state"
       :name="resource.name"
-      :fetch-selection="fetchSelection"
       class="justify-start"
+      @update:fetch="(val) => fetchSelection(val)"
       />
     <div class="d-flex justify-space-between">
       <VBtnGroup>
         <DownloadButton :selected-items="selectedItems" />
-        <DeleteModal  :selected-items="selectedItems" @update:refreshResource="refreshResource" />
-        <MultiFileModal v-if="dropModal" :drop-modal="dropModal" :drop-files="dropFiles" :drop-files-form="dropFilesForm" @update:submitted="refreshResource" @update:clear="() => dropModal = !dropModal"/>
-        <UploadModal :drop-files="dropFiles" :drop-files-form="dropFilesForm" :refresh-resource="refreshResource"/>
-        <CreateModal @update:refreshResource="refreshResource"/>
+        <DeleteModal  :selected-items="selectedItems" @update:refresh="refreshResource" />
+        <MultiFileModal v-if="dropModal" :drop-modal="dropModal" :drop-files="dropFiles" :drop-files-form="dropFilesForm" @update:refresh="refreshResource" @update:clear="() => dropModal = !dropModal"/>
+        <UploadModal @update:refresh="refreshResource"/>
+        <CreateModal @update:refresh="refreshResource"/>
         <VBtn v-if="isFlat" icon="mdi-folder-eye" title="Toggle Folder View" size="x-large" @click="fetchFlattenedView"/>
         <VBtn v-else icon="mdi-view-headline"  title="Toggle Flat List View" size="x-large" @click="fetchFlattenedView" />
       </VBtnGroup>
@@ -31,9 +31,8 @@
           :is-version-mode="isVersionMode"
           :data-table-items="dataTableItems"
           :selected-items="selectedItems"
-          :fetch-selection="fetchSelection"
-          :refresh-resource="refreshResource"
-          
+          @update:fetch="(val) => fetchSelection(val)"
+          @update:refresh="refreshResource"
           @update:items="(val) => selectedItems = val"
           />
         <VOverlay v-model="isOverDropZone" contained class="align-center justify-center text-h6 text-white">Drop Files to Upload</VOverlay>
@@ -156,9 +155,6 @@ const fetchSelection = async (form) => {
   }
 }
 
-const refreshResource = async () => {
-  // Time delay to give the backend time to update. Re-fetches current location
-  setTimeout(fetchSelection(currentPathForm.value), 4000)
-}
+const refreshResource = async () => fetchSelection(currentPathForm.value)
 </script>
 <style scoped></style>

@@ -52,7 +52,7 @@
         </VTooltip>
         <VBtnGroup>
           <VBtn icon="mdi-file-download" title="Download" @click="() => downloadFile(item.raw.download_url)"/>
-          <RestoreButton :id="resource.id" :api="api" :item="item.raw" @update:refreshResource="refreshResource"/>
+          <RestoreButton :id="resource.id" :api="api" :item="item.raw" @update:refresh="emit('update:refresh')"/>
         </VBtnGroup>
       </template> 
     </VDataTable>
@@ -70,7 +70,6 @@ import RestoreButton from "./RestoreButton.vue";
  * @property {Object} Props.sourceItem - The S3 Bucket item
  * @property {String} Props.location - The S3 Bucket location
  * @property {Object} Props.resource - The S3 Bucket resource
- * @property {Function} Props.refreshResource - Function to replace The S3 Bucket resource
  */
 /** @type {Props} */
 
@@ -90,17 +89,14 @@ const props = defineProps({
   resource: {
     type: Object,
     default: () => {},
-  },
-  refreshResource: {
-    type: Function,
-    default: () => {},
-  },
+  }
 });
 // TODO CMP-127 - Re-enable once Version updates are fixed. Update to handle versioning
 const isLoading = ref(false)
 const formError = ref()
 const versionInfo = ref()
 const versionMessage = ref('')
+const emit = defineEmits(["update:refresh"]);
 
 const eTag = computed(() => props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : '')
 const versionForm = computed(() => ({

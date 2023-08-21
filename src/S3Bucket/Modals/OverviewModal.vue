@@ -17,7 +17,7 @@
             <OverviewTab :source-item="sourceItem"  />
           </VWindowItem>
           <VWindowItem value="versions">
-            <VersionTab :source-item="sourceItem" :refresh-resource="refreshResource"/>
+            <VersionTab :source-item="sourceItem" @update:refresh="emit('update:refresh')"/>
           </VWindowItem>
         </VWindow>
       </VCardText>
@@ -36,7 +36,6 @@ import VersionTab from '../Components/VersionTab.vue';
 /**
  * @typedef {Object} Props
  * @property {Object} Props.sourceItem - The selected S3 Bucket item
- * @property {Function} Props.refreshResource - Function to fetch the selected S3 Bucket
  */
 /** @type {Props} */
 
@@ -44,15 +43,12 @@ defineProps({
   sourceItem: {
     type: Object,
     default: () => {}
-  },
-  refreshResource: {
-    type: Function,
-    default: () => {},
-  },
+  }
 });
 
 const tab = ref(null)
 const overviewDialog = ref(false)
+const emit = defineEmits(["update:refresh"]);
 // TODO CMP-127 - Re-enable once Version updates are fixed.
 const hasVersionMode = ref(false)
 </script>
