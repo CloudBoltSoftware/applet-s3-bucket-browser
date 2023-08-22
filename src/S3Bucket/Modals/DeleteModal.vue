@@ -36,8 +36,9 @@
 </template>
     
 <script setup>
-import { computed, inject, ref, toValue } from "vue";
+import { computed, inject, ref } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
+import { useBuckets } from '../../helpers/useBuckets';
 
 /**
  * @typedef {Object} Props
@@ -51,11 +52,9 @@ const props = defineProps({
   }
 });
 const api = inject('api')
-const resource = toValue(inject('resource'))
-const emit = defineEmits(["update:refresh"]);
-
-const deleteDialog = ref(false)
+const { bucketResource, refreshResource } = useBuckets(api)
 const formError = ref()
+const deleteDialog = ref(false)
 const isDeleting = ref(false)
 const isDisabled = computed(() => {
   if (props.selectedItems.length === 0 || props.selectedItems.find((entry) => entry.is_delete_marker)) {
@@ -86,10 +85,10 @@ async function deleteModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(`http://localhost:8001/ajax/s3-delete-file/${resource.id}/`,  formData)
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-delete-file/${bucketResource.value.id}/`,  formData)
     isDeleting.value = false
     deleteDialog.value = false
-    emit("update:refresh");
+    refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     // In this case, we'll just log the error to the console.

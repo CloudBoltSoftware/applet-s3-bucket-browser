@@ -6,7 +6,7 @@
     <VCard class="pa-3">
       <VForm @submit.prevent="folderUploadModal"  @update:model-value="(val) => formIsValid = val">
         <VCardTitle class="w-100 d-inline-flex justify-space-between text-h5">
-          <div>Upload folder to <span class="font-italic">{{path ? path : 'Root folder'}}</span></div>
+          <div>Upload folder to <span class="font-italic">{{ bucketPath ? bucketPath : 'Root folder' }}</span></div>
           <VBtn icon="mdi-close" title="Close" variant="text" data-dismiss="modal" @click="onCancel" />
         </VCardTitle>
         <VCardText>
@@ -29,18 +29,18 @@
 </template>
 
 <script setup>
-import { inject, ref, toValue } from "vue";
+import { inject, ref } from "vue";
 import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
-const api = inject('api')
-const path = inject('path')
-const resource = toValue(inject('resource'))
+import { useBuckets } from "../../helpers/useBuckets";
 
-const emit = defineEmits(["update:closeDialog", "update:refresh"]);
+const api = inject('api')
+const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
+const emit = defineEmits(["update:closeDialog"]);
 const isUploading = ref(false)
 const uploadFolder = ref()
 const uploadFolderForm = ref({
-  bucket_name: resource.name,
-  folder_path: path.value
+  bucket_name: bucketResource.value.name,
+  folder_path: bucketPath.value
 })
 const formIsValid = ref(false)
 const formError = ref()
@@ -61,12 +61,12 @@ async function folderUploadModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-folder/${resource.id}/`,  formData)
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-folder/${bucketResource.value.id}/`,  formData)
     isUploading.value = false
     folderDialog.value = false
     uploadFolder.value = []
-    emit("update:refresh")
     emit("update:closeDialog");
+    refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`

@@ -1,6 +1,6 @@
 <template>
   <VForm 
-    @submit.prevent="emit('update:fetch',selectionForm)">
+    @submit.prevent="fetchSelection(selectionForm)">
     <VBtn
       variant="text"
       :title="item.name"
@@ -12,7 +12,8 @@
 </template>
 
 <script setup>
-import { computed, onUpdated, ref } from "vue";
+import { computed, inject, onUpdated, ref } from "vue";
+import { useBuckets } from "../../helpers/useBuckets";
 /**
  * @typedef {Object} Props
  * @property {Object} Props.item - The current S3 Bucket folder item 
@@ -27,7 +28,9 @@ const props = defineProps({
 
 const selectedPath = ref('')
 const selectedName = ref('')
-const emit = defineEmits(["update:fetch"]);
+const api = inject('api')
+const { fetchSelection } = useBuckets(api)
+
 const selectionForm = computed(() => ({
   path: selectedPath.value,  // Encoding path early leads to double encoding '/'
   name: encodeURIComponent(selectedName.value)

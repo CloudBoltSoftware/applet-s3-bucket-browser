@@ -8,8 +8,9 @@
 </template>
     
 <script setup>
-import { computed, inject, ref, toValue } from "vue";
+import { computed, inject, ref } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
+import { useBuckets } from '../../helpers/useBuckets';
 
 /**
  * @typedef {Object} Props
@@ -24,11 +25,10 @@ const props = defineProps({
   },
 });
 
-const resource = toValue(inject('resource'))
 const api = inject('api')
+const { bucketResource, refreshResource } = useBuckets(api)
 const restoreError = ref()
 
-const emit = defineEmits(["update:refresh"]);
 // TODO CMP-127 - This button requires versioning and additional work 
 // Currently is disabled in the example
 const retoreItemForm = computed(() => ({
@@ -42,13 +42,12 @@ const restoreItem = async () => {
   // TODO - Backend issue
   try {
     const formData = convertObjectToFormData(retoreItemForm.value)
-    await api.base.instance.post(`http://localhost:8001/ajax/s3-promote-version/${resource.id}/`, formData)
-    emit("update:refresh");
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-promote-version/${bucketResource.value.id}/`, formData)
+    refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     restoreError.value = `(${error.code}) ${error.name}: ${error.message}`
   }
-
 }
 </script>
 <style scoped></style>

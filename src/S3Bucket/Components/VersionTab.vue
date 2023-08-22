@@ -42,7 +42,7 @@
         {{ sourceItem.item_type }}
       </template>
       <template #[`item.last_modified`]="{ item }">
-        {{ new Date(item.raw.last_modified).toLocaleTimeString('en-US') }}   {{ new Date(item.raw.last_modified).toDateString() }}
+        {{ parseDate(item.raw) }}
       </template> 
       <template #[`item.actions`]="{ item }">
         <VTooltip location="start" :text="formError" >
@@ -52,7 +52,7 @@
         </VTooltip>
         <VBtnGroup>
           <VBtn icon="mdi-file-download" title="Download" @click="() => downloadFile(item.raw.download_url)"/>
-          <RestoreButton :id="resource.id" :api="api" :item="item.raw" @update:refresh="emit('update:refresh')"/>
+          <RestoreButton :item="item.raw" />
         </VBtnGroup>
       </template> 
     </VDataTable>
@@ -60,8 +60,9 @@
 </template>
     
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, inject, onMounted, onUnmounted, ref } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
+import { useBuckets } from '../../helpers/useBuckets';
 import RestoreButton from "./RestoreButton.vue";
 
 /**
@@ -74,21 +75,9 @@ import RestoreButton from "./RestoreButton.vue";
 /** @type {Props} */
 
 const props = defineProps({
-  api: {
-    type: Object,
-    required: true,
-  },
   sourceItem: {
     type: Object,
     default: () => {}
-  },
-  location: {
-    type: String,
-    default: '',
-  },
-  resource: {
-    type: Object,
-    default: () => {},
   }
 });
 // TODO CMP-127 - Re-enable once Version updates are fixed. Update to handle versioning
@@ -96,17 +85,25 @@ const isLoading = ref(false)
 const formError = ref()
 const versionInfo = ref()
 const versionMessage = ref('')
-const emit = defineEmits(["update:refresh"]);
+const api = inject('api')
+const { bucketLocation, bucketResource } = useBuckets()
 
 const eTag = computed(() => props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : '')
 const versionForm = computed(() => ({
   e_tag: encodeURIComponent(eTag.value),
   key: encodeURIComponent(props.sourceItem.key),
-  location: encodeURIComponent(props.location)
+  location: encodeURIComponent(bucketLocation.value)
 }))
 const versionEnableForm = computed(() => ({
-  bucket_name: encodeURIComponent(props.resource.name)
+  bucket_name: encodeURIComponent(bucketResource.value.name)
 }))
+const parseDate = (entry) => {
+  // Converting from database UTC values to local string
+  const modifiedDate = new Date(`${entry.last_modified} UTC`).toDateString()
+  const modifiedTime = new Date(`${entry.last_modified} UTC`).toLocaleTimeString('en-US')
+  
+  return `${modifiedDate}  ${modifiedTime}`
+}
 
 const versionHeaders = [
   { title: 'Name', align: 'start', key: 'name' },
@@ -122,7 +119,7 @@ const fetchVersionInfo = async () => {
   // TODO - Backend issue
   try {
     const formData = convertObjectToFormData(versionForm.value)
-    const response = await props.api.base.instance.post(`http://localhost:8001/ajax/s3-get-versions/${props.resource.id}/`, formData)
+    const response = await api.base.instance.post(`http://localhost:8001/ajax/s3-get-versions/${bucketResource.value.id}/`, formData)
     isLoading.value = false
     versionInfo.value = response.data
   } catch (error) {
@@ -134,7 +131,7 @@ const fetchVersionInfo = async () => {
 const enableVersioning = async () => {
   try {
     const formData = convertObjectToFormData(versionEnableForm.value)
-    const response = await props.api.base.instance.post(`http://localhost:8001/ajax/s3-enable-versioning/${props.resource.id}/`, formData)
+    const response = await api.base.instance.post(`http://localhost:8001/ajax/s3-enable-versioning/${bucketResource.value.id}/`, formData)
     versionMessage.value = response.data.message
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.

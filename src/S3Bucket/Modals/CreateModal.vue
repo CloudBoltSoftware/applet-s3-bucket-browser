@@ -6,7 +6,7 @@
     <VCard class="pa-3">
       <VForm @submit.prevent="submitCreateModal" @update:model-value="(val) => formIsValid = val">
         <VCardTitle class="w-100 d-inline-flex justify-space-between text-h5">
-          <div>Create folder at <span class="font-italic">{{ path ? path : 'Root folder'}}</span></div>
+          <div>Create folder at <span class="font-italic">{{ bucketPath ? bucketPath : 'Root folder'}}</span></div>
           <VBtn icon="mdi-close" title="Close this dialog" variant="text" @click="onCancel"/>
         </VCardTitle>
         <VCardText>
@@ -42,19 +42,18 @@
 </template>
     
 <script setup>
-import { computed, inject, ref, toValue } from "vue";
+import { computed, inject, ref } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
+import { useBuckets } from "../../helpers/useBuckets";
 
 const api = inject('api')
-const path = inject('path')
-const resource = toValue(inject('resource'))
+const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
 
-const emit = defineEmits(["update:refresh"]);
 const newFolder = ref('')
 const createFolderForm = computed(() => ({
   folder_name: newFolder.value,
-  path: path.value,
-  bucket_name: resource.name
+  path: bucketPath.value,
+  bucket_name: bucketResource.value.name
   })
 ) 
 
@@ -79,11 +78,11 @@ async function submitCreateModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(`http://localhost:8001/ajax/s3-create-folder/${resource.id}/`,  formData)
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-create-folder/${bucketResource.value.id}/`,  formData)
     isSubmitting.value = false
     createDialog.value = false
     newFolder.value = ''
-    emit("update:refresh");
+    refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
