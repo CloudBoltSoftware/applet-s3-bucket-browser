@@ -1,32 +1,67 @@
 <template>
   <VDialog v-model="deleteDialog" width="1024">
-    <template #activator="{ props: deleteProps }" >
-      <VBtn v-bind="deleteProps" :disabled="isDisabled" icon="mdi-delete" title="Delete" size="x-large"/>
+    <template #activator="{ props: deleteProps }">
+      <VBtn
+        v-bind="deleteProps"
+        :disabled="isDisabled"
+        icon="mdi-delete"
+        title="Delete"
+        size="x-large"
+      />
     </template>
     <VForm @submit.prevent="deleteModal">
       <VCard class="pa-3" density="compact">
         <VCardTitle class="w-100 d-inline-flex justify-space-between text-h5">
           <span>Delete Confirmation</span>
-          <VBtn icon="mdi-close" title="Close this dialog" data-dismiss="modal" variant="text" @click="deleteDialog = false"/>
+          <VBtn
+            icon="mdi-close"
+            title="Close this dialog"
+            data-dismiss="modal"
+            variant="text"
+            @click="deleteDialog = false"
+          />
         </VCardTitle>
         <VCardText class="py-0 ml-3">
           <p class="text-h6">
-            <VIcon
-              color="error"
-              icon="mdi-alert"
-              class="text-h5"
-            />
-            Are you sure you want to delete?</p>
-          <p class="text-body-1">Note: If you have selected a folder, all objects in that folder will also be deleted.</p>    
+            <VIcon color="error" icon="mdi-alert" class="text-h5" />
+            Are you sure you want to delete?
+          </p>
+          <p class="text-body-1">
+            Note: If you have selected a folder, all objects in that folder will
+            also be deleted.
+          </p>
         </VCardText>
         <VCardAction class="d-flex justify-end px-3">
-          <VTooltip location="start" :text="formError" >
+          <VTooltip location="start" :text="formError">
             <template #activator="{ props: activatorProps }">
-              <VIcon v-if="formError" v-bind="activatorProps" color="error" size="large" icon="mdi-alert-circle" class="mt-1"/>
+              <VIcon
+                v-if="formError"
+                v-bind="activatorProps"
+                color="error"
+                size="large"
+                icon="mdi-alert-circle"
+                class="mt-1"
+              />
             </template>
           </VTooltip>
-          <VBtn prepend-icon="mdi-close" variant="flat" size="large" class="px-4 mx-2" @click="deleteDialog = false">Cancel</VBtn>
-          <VBtn :loading="isDeleting" :width="isDeleting ? '150' : '100'" prepend-icon="mdi-delete" variant="flat" color="primary" size="large" class="px-4" type=submit >Delete
+          <VBtn
+            prepend-icon="mdi-close"
+            variant="flat"
+            size="large"
+            class="px-4 mx-2"
+            @click="deleteDialog = false"
+            >Cancel</VBtn
+          >
+          <VBtn
+            :loading="isDeleting"
+            :width="isDeleting ? '150' : '100'"
+            prepend-icon="mdi-delete"
+            variant="flat"
+            color="primary"
+            size="large"
+            class="px-4"
+            type="submit"
+            >Delete
             <template #loader>Deleting...</template>
           </VBtn>
         </VCardAction>
@@ -34,9 +69,9 @@
     </VForm>
   </VDialog>
 </template>
-    
+
 <script setup>
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref } from 'vue';
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
 
@@ -48,19 +83,22 @@ import { useBuckets } from '../../helpers/useBuckets';
 const props = defineProps({
   selectedItems: {
     type: Array,
-    default: () => [],
+    default: () => []
   }
-});
+})
 const api = inject('api')
 const { bucketResource, refreshResource } = useBuckets(api)
 const formError = ref()
 const deleteDialog = ref(false)
 const isDeleting = ref(false)
 const isDisabled = computed(() => {
-  if (props.selectedItems.length === 0 || props.selectedItems.find((entry) => entry.is_delete_marker)) {
+  if (
+    props.selectedItems.length === 0 ||
+    props.selectedItems.find((entry) => entry.is_delete_marker)
+  ) {
     return true
   }
-return false
+  return false
 })
 
 const filePath = computed(() => {
@@ -85,7 +123,10 @@ async function deleteModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(`http://localhost:8001/ajax/s3-delete-file/${bucketResource.value.id}/`,  formData)
+    await api.base.instance.post(
+      `http://localhost:8001/ajax/s3-delete-file/${bucketResource.value.id}/`,
+      formData
+    )
     isDeleting.value = false
     deleteDialog.value = false
     refreshResource()

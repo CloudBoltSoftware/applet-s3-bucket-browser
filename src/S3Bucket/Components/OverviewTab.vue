@@ -12,11 +12,11 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Last Modified</div>
-          <p>{{  sourceItem.last_modified }}</p>
+          <p>{{ sourceItem.last_modified }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Size</div>
-          <p>{{  sourceItem.size }}</p>
+          <p>{{ sourceItem.size }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Type</div>
@@ -30,7 +30,7 @@
           <p>{{ sourceItem.key }}</p>
         </div>
       </VCol>
-      <VCol cols="6" >
+      <VCol cols="6">
         <div class="mb-3">
           <div class="text-medium-emphasis">S3 URI</div>
           <p>{{ sourceItem.s3_uri }}</p>
@@ -45,15 +45,20 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Object URL</div>
-          <a target="_blank" :href="sourceItem.object_url" class="text-decoration-none text-primary" >{{ sourceItem.object_url }}</a>
+          <a
+            target="_blank"
+            :href="sourceItem.object_url"
+            class="text-decoration-none text-primary"
+            >{{ sourceItem.object_url }}</a
+          >
         </div>
       </VCol>
     </VRow>
   </VContainer>
 </template>
-    
+
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue';
 import { useBuckets } from '../../helpers/useBuckets';
 /**
  * @typedef {Object} sourceItem
@@ -81,9 +86,11 @@ const props = defineProps({
     type: Object,
     default: () => {}
   }
-});
+})
 
 const { bucketLocation } = useBuckets()
-const eTag = computed(() => props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : '')
+const eTag = computed(() =>
+  props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : ''
+)
 </script>
 <style scoped></style>

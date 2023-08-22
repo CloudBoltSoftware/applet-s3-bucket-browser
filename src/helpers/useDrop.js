@@ -7,7 +7,7 @@ const dropModal = ref(false)
 const dropFiles = ref([])
 
 export function useDrop() {
-  const { bucketResource, bucketPath, } = useBuckets()
+  const { bucketResource, bucketPath } = useBuckets()
 
   const dropFilesForm = computed(() => ({
     bucket_name: bucketResource.value.name,
@@ -16,17 +16,17 @@ export function useDrop() {
 
   const onDrop = (files) => {
     if (files) {
-      dropFiles.value = files.filter(file => file.type !== '')
+      dropFiles.value = files.filter((file) => file.type !== '')
       dropModal.value = true
     }
-    if (!files.findIndex(file => file.type === '')) {
+    if (!files.findIndex((file) => file.type === '')) {
       dropError.value = true
       clearError()
     }
   }
 
-  const clearError = () => setTimeout(() => dropError.value = false, 5000)
-  const clearModal = () => dropModal.value = !dropModal.value
+  const clearError = () => setTimeout(() => (dropError.value = false), 5000)
+  const clearModal = () => (dropModal.value = !dropModal.value)
 
   return {
     onDrop,
@@ -36,6 +36,6 @@ export function useDrop() {
     dropFilesForm,
     dropError,
     dropModal,
-    dropFiles,
+    dropFiles
   }
 }
