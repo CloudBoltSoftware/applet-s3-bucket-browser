@@ -35,8 +35,9 @@
 </template>
     
 <script setup>
-import { computed, inject, ref, toValue, watch } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
+import { useBuckets } from '../../helpers/useBuckets';
 
 /**
  * @typedef {Object} Props
@@ -51,11 +52,8 @@ const props = defineProps({
   }
 });
 
-const resource = toValue(inject('resource'))
-const path = inject('path')
 const api = inject('api')
-
-const emit = defineEmits(["update:refresh"]);
+const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
 const isSubmitting = ref(false)
 const renameDialog = ref(false)
 const formIsValid = ref(false)
@@ -66,8 +64,8 @@ const renameNew = ref('')
 const renameForm = computed(() => ({  
   old_object_name: renameOld.value,
   new_object_name: renameNew.value,
-  path: path.value,
-  bucket_name: resource.name})
+  path: bucketPath.value,
+  bucket_name: bucketResource.value.name})
 ) 
 
 const requiredRule = [
@@ -93,10 +91,10 @@ async function renameObject() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(`http://localhost:8001/ajax/s3-rename-object/${resource.id}/`,  formData)
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-rename-object/${bucketResource.value.id}/`,  formData)
     isSubmitting.value = false
     renameDialog.value = false
-    emit("update:refresh");
+    refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`

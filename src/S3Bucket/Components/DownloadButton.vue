@@ -8,8 +8,9 @@
 </template>
     
 <script setup>
-import { computed, inject, ref, toValue } from "vue";
+import { computed, inject, ref } from "vue";
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
+import { useBuckets } from '../../helpers/useBuckets';
 /**
  * @typedef {Object} Props
  * @property {Array} Props.selectedItems - The selected S3 Bucket items
@@ -22,8 +23,7 @@ const props = defineProps({
   },
 });
 const api = inject('api')
-const resource = toValue(inject('resource'))
-const location = inject('location')
+const { bucketResource, bucketLocation } = useBuckets()
 const downloadError = ref()
 
 // Disabled download if there are no items, or folder items
@@ -37,7 +37,7 @@ const isDisabled = computed(() => {
 const filePaths = computed(() => 
   props.selectedItems.map((item) => ({
     path: item.url,
-    location: location
+    location: bucketLocation.value
   }))
 )
 
@@ -48,7 +48,7 @@ async function downloadFiles() {
       // Because this function is `async`, we can use `await` to wait for the API call to finish.
       // Alternatively, we could use `.then()` and `.catch()` to handle the response.
       // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-      const response = await api.base.instance.post(`http://localhost:8001/ajax/s3-download-file/${resource.id}/`,  formData)
+      const response = await api.base.instance.post(`http://localhost:8001/ajax/s3-download-file/${bucketResource.value.id}/`,  formData)
       if (response.status === 200) {
         window.open(response.data.url, "_blank")
       }

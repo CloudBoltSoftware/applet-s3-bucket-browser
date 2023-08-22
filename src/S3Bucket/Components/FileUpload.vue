@@ -6,7 +6,7 @@
     <VCard class="pa-3">
       <VForm @submit.prevent="fileUploadModal" @update:model-value="(val) => formIsValid = val">
         <VCardTitle class="w-100 d-inline-flex justify-space-between text-h5">
-          <div>Upload file to <span class="font-italic">{{path ? path : 'Root folder'}}</span></div>
+          <div>Upload file to <span class="font-italic">{{ bucketPath ? bucketPath : 'Root folder'}}</span></div>
           <VBtn icon="mdi-close" title="Close" data-dismiss="modal" variant="text" @click="onCancel" />
         </VCardTitle>
         <VCardText>
@@ -29,18 +29,18 @@
 </template>
 
 <script setup>
-import { inject, ref, toValue } from "vue";
+import { inject, ref } from "vue";
 import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
-const api = inject('api')
-const path = inject('path')
-const resource = toValue(inject('resource'))
+import { useBuckets } from "../../helpers/useBuckets";
 
-const emit = defineEmits(["update:closeDialog", "update:refresh"]);
+const api = inject('api')
+const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
+const emit = defineEmits(["update:closeDialog"]);
 const isUploading = ref(false)
 const uploadFile = ref([])
 const uploadFileForm = ref({
-  bucket_name: resource.name,
-  path: path.value
+  bucket_name: bucketResource.value.name,
+  path: bucketPath.value
 }) 
 const formIsValid = ref(false)
 const formError = ref()
@@ -61,12 +61,12 @@ async function fileUploadModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-object/${resource.id}/`,  formData)
-    emit("update:refresh")
+    await api.base.instance.post(`http://localhost:8001/ajax/s3-upload-new-object/${bucketResource.value.id}/`,  formData)
     isUploading.value = false
     emit("update:closeDialog");
     fileDialog.value = false
     uploadFile.value = []
+    refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`

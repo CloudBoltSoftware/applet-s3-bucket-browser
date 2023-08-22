@@ -5,7 +5,7 @@
     :headers="isVersionMode ? versionHeaders : headers"
     :items="dataTableItems"
     :item-value="item => item"
-    :loading=isLoading
+    :loading=bucketLoading
     show-select
     :show-expand="isVersionMode ? true : false"
     @update:model-value="(val) => emit('update:items', val)"
@@ -26,7 +26,6 @@
         <FolderButton 
         v-if="!item.raw.is_file"
         :item="item.raw"
-        @update:fetch="(val) => emit('update:fetch', val)"
         />
         <div v-else class="ml-4">{{ item.raw.name }}</div>
       </td>
@@ -38,9 +37,9 @@
       <td v-if="item.raw.is_file" class="d-inline-flex">
         <VBtnGroup>
           <VBtn v-if="isVersionMode" icon="mdi-file-download" title="Download" :disabled="item.raw.is_delete_marker" @click="downloadFile(item.raw.download_url)"/>
-          <RestoreButton v-if="isVersionMode" :item="item.raw" @update:refresh="emit('update:refresh')"/>
-          <RenameModal :name="item.raw.name" @update:refresh="emit('update:refresh')"/>
-          <OverviewModal :source-item="item.raw" @update:refresh="emit('update:refresh')"/>
+          <RestoreButton v-if="isVersionMode" :item="item.raw" />
+          <RenameModal :name="item.raw.name" />
+          <OverviewModal :source-item="item.raw" />
         </VBtnGroup>
       </td>
     </template>
@@ -68,7 +67,7 @@
         <td>        
           <VBtnGroup>
             <VBtn icon="mdi-file-download" title="Download" :disabled="entry.is_delete_marker"  @click="downloadFile(entry.download_url)"/>
-            <RestoreButton :item="entry" @update:refresh="emit('update:refresh')"/>
+            <RestoreButton :item="entry" />
           </VBtnGroup>
         </td>
         <td></td>
@@ -79,13 +78,14 @@
 
 <script setup>
 import { ref } from "vue";
+import { useBuckets } from '../../helpers/useBuckets';
 import OverviewModal from "../Modals/OverviewModal.vue";
 import RenameModal from "../Modals/RenameModal.vue";
 import FolderButton from "./FolderButton.vue";
 import RestoreButton from "./RestoreButton.vue";
+
 /**
  * @typedef {Object} Props
- * @property {Boolean} Props.isLoading - Loading data response
  * @property {Boolean} Props.isVersionMode - Boolean if Bucket Version mode is on
  * @property {Array} Props.dataTableItems - The array of all the items for the dataTable
  * @property {Array} Props.selectedItems - The array of the selected dataTable items
@@ -93,10 +93,6 @@ import RestoreButton from "./RestoreButton.vue";
  */
 /** @type {Props} */
 defineProps({
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
   isVersionMode: {
     type: Boolean,
     default: false,
@@ -115,8 +111,9 @@ defineProps({
   }
 });
 
+const { bucketLoading } = useBuckets()
 const expanded = ref([])
-const emit = defineEmits(["update:items", "update:fetch", "update:refresh"]);
+const emit = defineEmits(["update:items"]);
 
 const headers = [
   { title: 'Name', align: 'start', key: 'name' },

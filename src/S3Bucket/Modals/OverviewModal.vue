@@ -17,7 +17,7 @@
             <OverviewTab :source-item="sourceItem"  />
           </VWindowItem>
           <VWindowItem value="versions">
-            <VersionTab :source-item="sourceItem" @update:refresh="emit('update:refresh')"/>
+            <VersionTab :source-item="sourceItem" />
           </VWindowItem>
         </VWindow>
       </VCardText>
@@ -48,7 +48,6 @@ defineProps({
 
 const tab = ref(null)
 const overviewDialog = ref(false)
-const emit = defineEmits(["update:refresh"]);
 // TODO CMP-127 - Re-enable once Version updates are fixed.
 const hasVersionMode = ref(false)
 </script>

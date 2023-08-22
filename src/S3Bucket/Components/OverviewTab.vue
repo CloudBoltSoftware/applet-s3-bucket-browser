@@ -8,7 +8,7 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">AWS Region</div>
-          <p>{{ location }}</p>
+          <p>{{ bucketLocation }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Last Modified</div>
@@ -53,7 +53,8 @@
 </template>
     
 <script setup>
-import { computed, inject } from "vue";
+import { computed } from "vue";
+import { useBuckets } from '../../helpers/useBuckets';
 /**
  * @typedef {Object} sourceItem
  * @property {String} owner_name
@@ -82,7 +83,7 @@ const props = defineProps({
   }
 });
 
-const location = inject('location')
+const { bucketLocation } = useBuckets()
 const eTag = computed(() => props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : '')
 </script>
 <style scoped></style>
