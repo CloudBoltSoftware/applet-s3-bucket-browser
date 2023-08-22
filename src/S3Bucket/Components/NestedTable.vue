@@ -4,39 +4,42 @@
     v-model:expanded="expanded"
     :headers="isVersionMode ? versionHeaders : headers"
     :items="dataTableItems"
-    :item-value="item => item"
-    :loading=bucketLoading
+    :item-value="(item) => item"
+    :loading="bucketLoading"
     show-select
     :show-expand="isVersionMode ? true : false"
     @update:model-value="(val) => emit('update:items', val)"
-    >
+  >
     <template #[`item.name`]="{ item }">
       <td class="d-inline-flex">
-        <VIcon 
+        <VIcon
           v-if="item.raw.nested_version"
           icon="mdi-arrow-up-left"
           class="ml-4"
-          />
+        />
         <VIcon
           v-else
-          :icon="item.raw.is_file ? 'mdi-file' :  'mdi-folder' "
+          :icon="item.raw.is_file ? 'mdi-file' : 'mdi-folder'"
           color="blue-darken-3"
           class="align-self-center"
         />
-        <FolderButton 
-        v-if="!item.raw.is_file"
-        :item="item.raw"
-        />
+        <FolderButton v-if="!item.raw.is_file" :item="item.raw" />
         <div v-else class="ml-4">{{ item.raw.name }}</div>
       </td>
-    </template> 
+    </template>
     <template #[`item.last_modified`]="{ item }">
       {{ item.raw.is_file ? parseDate(item.raw) : '' }}
-    </template> 
+    </template>
     <template #[`item.actions`]="{ item }">
       <td v-if="item.raw.is_file" class="d-inline-flex">
         <VBtnGroup>
-          <VBtn v-if="isVersionMode" icon="mdi-file-download" title="Download" :disabled="item.raw.is_delete_marker" @click="downloadFile(item.raw.download_url)"/>
+          <VBtn
+            v-if="isVersionMode"
+            icon="mdi-file-download"
+            title="Download"
+            :disabled="item.raw.is_delete_marker"
+            @click="downloadFile(item.raw.download_url)"
+          />
           <RestoreButton v-if="isVersionMode" :item="item.raw" />
           <RenameModal :name="item.raw.name" />
           <OverviewModal :source-item="item.raw" />
@@ -53,36 +56,39 @@
     <template #expanded-row="{ item }">
       <tr v-for="(entry, idx) in item.raw?.versions" :key="idx">
         <td></td>
-        <td>       
-          <VIcon 
-            icon="mdi-arrow-up-left"
-            class="ml-4 mt-n1"
-            />
-            <span class="mx-2">{{ entry.version_id }}</span><span class="ml-2 text-disabled">Version Id</span>
+        <td>
+          <VIcon icon="mdi-arrow-up-left" class="ml-4 mt-n1" />
+          <span class="mx-2">{{ entry.version_id }}</span
+          ><span class="ml-2 text-disabled">Version Id</span>
         </td>
-        <td>{{ item.raw.item_type }}</td>  
+        <td>{{ item.raw.item_type }}</td>
         <td>{{ parseDate(entry) }}</td>
         <td>{{ entry.size }}</td>
         <td>{{ entry.storage_class }}</td>
-        <td>        
+        <td>
           <VBtnGroup>
-            <VBtn icon="mdi-file-download" title="Download" :disabled="entry.is_delete_marker"  @click="downloadFile(entry.download_url)"/>
+            <VBtn
+              icon="mdi-file-download"
+              title="Download"
+              :disabled="entry.is_delete_marker"
+              @click="downloadFile(entry.download_url)"
+            />
             <RestoreButton :item="entry" />
           </VBtnGroup>
         </td>
         <td></td>
       </tr>
-    </template> 
+    </template>
   </VDataTable>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useBuckets } from '../../helpers/useBuckets';
-import OverviewModal from "../Modals/OverviewModal.vue";
-import RenameModal from "../Modals/RenameModal.vue";
-import FolderButton from "./FolderButton.vue";
-import RestoreButton from "./RestoreButton.vue";
+import { ref } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
+import OverviewModal from '../Modals/OverviewModal.vue'
+import RenameModal from '../Modals/RenameModal.vue'
+import FolderButton from './FolderButton.vue'
+import RestoreButton from './RestoreButton.vue'
 
 /**
  * @typedef {Object} Props
@@ -95,25 +101,25 @@ import RestoreButton from "./RestoreButton.vue";
 defineProps({
   isVersionMode: {
     type: Boolean,
-    default: false,
+    default: false
   },
   dataTableItems: {
     type: Array,
-    default: () => [],
+    default: () => []
   },
   selectedItems: {
     type: Array,
-    default: () => [],
+    default: () => []
   },
   updatedSelectedItems: {
     type: Function,
-    default: () => {},
+    default: () => {}
   }
-});
+})
 
 const { bucketLoading } = useBuckets()
 const expanded = ref([])
-const emit = defineEmits(["update:items"]);
+const emit = defineEmits(['update:items'])
 
 const headers = [
   { title: 'Name', align: 'start', key: 'name' },
@@ -121,7 +127,7 @@ const headers = [
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
   { title: 'Size', align: 'end', key: 'size' },
   { title: 'Storage Class', align: 'end', key: 'storage_class' },
-  { title: 'Actions', align: 'center', key: 'actions' },
+  { title: 'Actions', align: 'center', key: 'actions' }
 ]
 const versionHeaders = [
   { title: 'Name', align: 'start', key: 'name' },
@@ -130,23 +136,24 @@ const versionHeaders = [
   { title: 'Size', align: 'start', key: 'size' },
   { title: 'Storage Class', align: 'start', key: 'storage_class' },
   { title: 'Actions', align: 'start', key: 'actions' },
-  { title: '', align: 'center', key: 'data-table-expand', sortable: false },
+  { title: '', align: 'center', key: 'data-table-expand', sortable: false }
 ]
 
 const parseDate = (entry) => {
   // Converting from database UTC values to local string
   const modifiedDate = new Date(`${entry.last_modified} UTC`).toDateString()
-  const modifiedTime = new Date(`${entry.last_modified} UTC`).toLocaleTimeString('en-US')
-  
+  const modifiedTime = new Date(
+    `${entry.last_modified} UTC`
+  ).toLocaleTimeString('en-US')
+
   return `${modifiedDate}  ${modifiedTime}`
 }
 
 // TODO CMP-127 - Re-enable once Version updates are fixed. Requires download_url
 const downloadFile = (url) => {
   // TODO Better Decoding needed
-  const adjustedUrl = url.replace(/&amp;/g,'&')
+  const adjustedUrl = url.replace(/&amp;/g, '&')
   window.open(adjustedUrl, '_blank')
 }
 </script>
 <style scoped></style>
-
