@@ -24,7 +24,7 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Key</div>
-          <p>{{ sourceItem.name }}</p>
+          <p><CopyText :text-to-copy="sourceItem.name" />{{ sourceItem.name }}</p>
         </div>
         <div id="kfp-parent" class="d-none">
           <p>{{ sourceItem.key }}</p>
@@ -33,24 +33,25 @@
       <VCol cols="6">
         <div class="mb-3">
           <div class="text-medium-emphasis">S3 URI</div>
-          <p>{{ sourceItem.s3_uri }}</p>
+          <p><CopyText :text-to-copy="sourceItem.s3_uri" />{{ sourceItem.s3_uri }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Amazon Resource Name (ARN)</div>
-          <p>{{ sourceItem.arn }}</p>
+          <p><CopyText :text-to-copy="sourceItem.arn" />{{ sourceItem.arn }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Entity Tag (ETag)</div>
-          <p>{{ eTag }}</p>
+          <p><CopyText :text-to-copy="eTag" />{{ eTag }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Object URL</div>
-          <a
-            target="_blank"
-            :href="sourceItem.object_url"
-            class="text-decoration-none text-primary"
-            >{{ sourceItem.object_url }}</a
-          >
+          <p><CopyText :text-to-copy="sourceItem.object_url" />
+            <a
+              target="_blank"
+              :href="sourceItem.object_url"
+              class="text-decoration-none text-primary"
+              >{{ sourceItem.object_url }}</a>
+          </p>
         </div>
       </VCol>
     </VRow>
@@ -60,6 +61,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useBuckets } from '../../helpers/useBuckets';
+import CopyText from './CopyText.vue';
 /**
  * @typedef {Object} sourceItem
  * @property {String} owner_name
