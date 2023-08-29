@@ -92,7 +92,7 @@ const props = defineProps({
 
 const { bucketLocation } = useBuckets()
 const eTag = computed(() =>
-  props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : ''
+  props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '') : ''
 )
 </script>
 <style scoped></style>
