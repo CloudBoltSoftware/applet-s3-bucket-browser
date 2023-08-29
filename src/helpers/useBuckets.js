@@ -28,9 +28,7 @@ export function useBuckets(api = {}) {
   const currentError = ref()
   const getBuckets = async () => {
     try {
-      const response = await api.base.instance.get(
-        'ajax/s3-list-buckets/'
-      )
+      const response = await api.base.instance.get('ajax/s3-list-buckets/')
       buckets.value = response.data.bucket_info
       currentError.value = ''
     } catch (error) {
