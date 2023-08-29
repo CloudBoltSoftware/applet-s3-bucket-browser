@@ -1,5 +1,5 @@
 <template>
-  <VDialog v-model="overviewDialog" width="1024">
+  <VDialog v-model="overviewDialog" width="1200">
     <template #activator="{ props: overviewProps }">
       <VBtn v-bind="overviewProps" icon="mdi-information" title="Details" />
     </template>
@@ -32,10 +32,10 @@
       <VCardText class="pt-0">
         <VWindow v-model="tab">
           <VWindowItem value="overview">
-            <OverviewTab :source-item="sourceItem" />
+            <OverviewTab :source-item="sourceItem" :has-versions="hasVersionMode" />
           </VWindowItem>
           <VWindowItem value="versions">
-            <VersionTab :source-item="sourceItem" />
+            <VersionTab :source-item="sourceItem" :has-versions="hasVersionMode" />
           </VWindowItem>
         </VWindow>
       </VCardText>
@@ -54,13 +54,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useBuckets } from '../../helpers/useBuckets';
 import OverviewTab from '../Components/OverviewTab.vue';
 import VersionTab from '../Components/VersionTab.vue';
 
 /**
  * @typedef {Object} Props
  * @property {Object} Props.sourceItem - The selected S3 Bucket item
+ * @property {Boolean} Props.hasVersions - Boolean if the item has versioning
  */
 /** @type {Props} */
 
@@ -68,12 +70,17 @@ defineProps({
   sourceItem: {
     type: Object,
     default: () => {}
-  }
+  },
+  hasVersions: {
+    type: Boolean,
+    default: false
+  },
 })
 
+const { bucketState } = useBuckets()
 const tab = ref(null)
 const overviewDialog = ref(false)
-// TODO CMP-127 - Re-enable once Version updates are fixed.
-const hasVersionMode = ref(false)
+const hasVersionMode = computed(() => bucketState.value.versioning_enabled)
+
 </script>
 <style scoped></style>

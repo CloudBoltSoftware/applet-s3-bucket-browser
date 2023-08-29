@@ -30,6 +30,10 @@
     <template #[`item.last_modified`]="{ item }">
       {{ item.raw.is_file ? parseDate(item.raw) : '' }}
     </template>
+    <template #[`item.size`]="{ item }">
+      {{ item.raw.is_file && !item.raw.is_delete_marker  ? item.raw.size : '' }}
+      <span v-if="item.raw.is_delete_marker" class="font-weight-thin">Deleted</span>
+    </template>
     <template #[`item.actions`]="{ item }">
       <td v-if="item.raw.is_file" class="d-inline-flex">
         <VBtnGroup>
@@ -41,7 +45,7 @@
             @click="downloadFile(item.raw.download_url)"
           />
           <RestoreButton v-if="isVersionMode" :item="item.raw" />
-          <RenameModal :name="item.raw.name" />
+          <RenameModal :name="item.raw.name" :is-deleted="item.raw.is_delete_marker"/>
           <OverviewModal :source-item="item.raw" />
         </VBtnGroup>
       </td>
@@ -141,15 +145,12 @@ const versionHeaders = [
 
 const parseDate = (entry) => {
   // Converting from database UTC values to local string
-  const modifiedDate = new Date(`${entry.last_modified} UTC`).toDateString()
-  const modifiedTime = new Date(
-    `${entry.last_modified} UTC`
-  ).toLocaleTimeString('en-US')
+  const modifiedDate = new Date(entry.last_modified).toDateString()
+  const modifiedTime = new Date(entry.last_modified).toLocaleTimeString('en-US')
 
   return `${modifiedDate}  ${modifiedTime}`
 }
 
-// TODO CMP-127 - Re-enable once Version updates are fixed. Requires download_url
 const downloadFile = (url) => {
   // TODO Better Decoding needed
   const adjustedUrl = url.replace(/&amp;/g, '&')

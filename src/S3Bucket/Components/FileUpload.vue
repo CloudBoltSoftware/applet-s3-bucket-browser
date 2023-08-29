@@ -1,7 +1,7 @@
 <template>
   <VDialog
     v-model="fileDialog"
-    width="1024"
+    width="1200"
     @update:model-value="(val) => !val && onCancel()"
   >
     <template #activator="{ props: fileProps }">

@@ -11,7 +11,7 @@
       />
     </template>
   </VTooltip>
-  <VBtn icon="mdi-file-undo" title="Restore File" @click="restoreItem" />
+  <VBtn icon="mdi-file-undo" title="Restore File" :disabled="isDeleted" @click="restoreItem" />
 </template>
 
 <script setup>
@@ -33,20 +33,21 @@ const props = defineProps({
 })
 
 const api = inject('api')
-const { bucketResource, refreshResource } = useBuckets(api)
+const { bucketResource, bucketPath, refreshResource, isFlat } = useBuckets(api)
 const restoreError = ref()
-
-// TODO CMP-127 - This button requires versioning and additional work
-// Currently is disabled in the example
+const isDeleted = computed(() => props.item.is_delete_marker)
+console.log(props.item)
 const retoreItemForm = computed(() => ({
-  key: props.item.key,
-  path: props.item.path,
   version_id: props.item.version_id,
-  restore: 'True'
+  key: props.item.key,
+  state: JSON.stringify({
+    full_path: bucketPath.value,
+    flat: isFlat.value
+  }),
+  restore: true
 }))
 
 const restoreItem = async () => {
-  // TODO - Backend issue
   try {
     const formData = convertObjectToFormData(retoreItemForm.value)
     await api.base.instance.post(

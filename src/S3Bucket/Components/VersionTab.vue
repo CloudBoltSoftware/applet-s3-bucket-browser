@@ -1,7 +1,7 @@
 <template>
   <VProgressCircular v-if="isLoading" indeterminate />
   <div v-else>
-    <VBanner v-if="versionInfo && !versionInfo.status">
+    <VBanner v-if="!hasVersions || !versionInfo">
       <template #prepend>
         <VIcon color="error" icon="mdi-alert" class="text-h3" />
       </template>
@@ -9,7 +9,7 @@
         <div class="mr-6">
           <p class="text-h5 mb-2">
             Bucket
-            <span class="font-weight-medium">{{ resource.name }}</span> doesn't
+            <span class="font-weight-medium">{{ bucketResource.name }}</span> doesn't
             have Bucket Versioning enabled
           </p>
           <p class="text-body-1">
@@ -74,6 +74,7 @@
           <VBtn
             icon="mdi-file-download"
             title="Download"
+            :disabled="item.raw.is_delete_marker"
             @click="() => downloadFile(item.raw.download_url)"
           />
           <RestoreButton :item="item.raw" />
@@ -91,10 +92,8 @@ import RestoreButton from './RestoreButton.vue';
 
 /**
  * @typedef {Object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
  * @property {Object} Props.sourceItem - The S3 Bucket item
- * @property {String} Props.location - The S3 Bucket location
- * @property {Object} Props.resource - The S3 Bucket resource
+ * @property {Boolean} Props.hasVersions - Boolean if the item has versioning enabled
  */
 /** @type {Props} */
 
@@ -102,33 +101,33 @@ const props = defineProps({
   sourceItem: {
     type: Object,
     default: () => {}
-  }
+  },
+  hasVersions: {
+    type: Boolean,
+    default: false
+  },
 })
-// TODO CMP-127 - Re-enable once Version updates are fixed. Update to handle versioning
+const api = inject('api')
+const { bucketResource } = useBuckets()
 const isLoading = ref(false)
 const formError = ref()
-const versionInfo = ref()
+const versionInfo = ref(true)
 const versionMessage = ref('')
-const api = inject('api')
-const { bucketLocation, bucketResource } = useBuckets()
 
 const eTag = computed(() =>
-  props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : ''
+  props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '') : ''
 )
 const versionForm = computed(() => ({
   e_tag: encodeURIComponent(eTag.value),
-  key: encodeURIComponent(props.sourceItem.key),
-  location: encodeURIComponent(bucketLocation.value)
+  key: encodeURIComponent(props.sourceItem.key)
 }))
 const versionEnableForm = computed(() => ({
   bucket_name: encodeURIComponent(bucketResource.value.name)
 }))
 const parseDate = (entry) => {
   // Converting from database UTC values to local string
-  const modifiedDate = new Date(`${entry.last_modified} UTC`).toDateString()
-  const modifiedTime = new Date(
-    `${entry.last_modified} UTC`
-  ).toLocaleTimeString('en-US')
+  const modifiedDate = new Date(entry.last_modified).toDateString()
+  const modifiedTime = new Date(entry.last_modified).toLocaleTimeString()
 
   return `${modifiedDate}  ${modifiedTime}`
 }
@@ -144,7 +143,6 @@ const versionHeaders = [
 ]
 
 const fetchVersionInfo = async () => {
-  // TODO - Backend issue
   try {
     const formData = convertObjectToFormData(versionForm.value)
     const response = await api.base.instance.post(
@@ -152,7 +150,7 @@ const fetchVersionInfo = async () => {
       formData
     )
     isLoading.value = false
-    versionInfo.value = response.data
+    versionInfo.value = response.data?.status
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
@@ -173,7 +171,6 @@ const enableVersioning = async () => {
   }
 }
 
-// TODO - Re-enable once Version updates are fixed. Requires download_url
 const downloadFile = (url) => {
   // TODO Better Decoding needed
   const adjustedUrl = url.replace(/&amp;/g, '&')

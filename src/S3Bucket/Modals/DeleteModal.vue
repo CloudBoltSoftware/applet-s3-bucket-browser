@@ -1,5 +1,5 @@
 <template>
-  <VDialog v-model="deleteDialog" width="1024">
+  <VDialog v-model="deleteDialog" width="1200">
     <template #activator="{ props: deleteProps }">
       <VBtn
         v-bind="deleteProps"
@@ -87,7 +87,7 @@ const props = defineProps({
   }
 })
 const api = inject('api')
-const { bucketResource, refreshResource } = useBuckets(api)
+const { bucketResource, bucketPath, isFlat, refreshResource } = useBuckets(api)
 const formError = ref()
 const deleteDialog = ref(false)
 const isDeleting = ref(false)
@@ -113,7 +113,11 @@ const filePath = computed(() => {
   return allFiles
 })
 const deleteForm = computed(() => ({
-  all_files_path: JSON.stringify(filePath.value)
+  all_files_path: JSON.stringify(filePath.value),
+  state: JSON.stringify({
+    full_path: bucketPath.value,
+    flat: isFlat.value
+  }),
 }))
 
 async function deleteModal() {

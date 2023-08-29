@@ -1,11 +1,11 @@
 <template>
   <VDialog
     v-model="renameDialog"
-    width="1024"
+    width="1200"
     @update:model-value="(val) => !val && onCancel()"
   >
     <template #activator="{ props: renameProps }">
-      <VBtn v-bind="renameProps" icon="mdi-pencil-circle" title="Rename" />
+      <VBtn v-bind="renameProps" :disabled="isDeleted" icon="mdi-pencil-circle" title="Rename" />
     </template>
     <VCard class="pa-3">
       <VForm
@@ -77,7 +77,8 @@ import { useBuckets } from '../../helpers/useBuckets';
 
 /**
  * @typedef {Object} Props
- * @property {Object} Props.name - The selected S3 Bucket item's name
+ * @property {String} Props.name - The selected S3 Bucket item's name
+ * @property {Boolean} Props.isDeleted - Boolean if the item has a delete marker
  */
 /** @type {Props} */
 
@@ -85,6 +86,10 @@ const props = defineProps({
   name: {
     type: String,
     required: true
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 })
 
