@@ -39,7 +39,7 @@
           </VWindowItem>
         </VWindow>
       </VCardText>
-      <VCardActions class="d-flex justify-end px-3">
+      <VCardActions class="d-flex justify-end px-3 mb-1">
         <VBtn
           color="primary"
           variant="flat"
