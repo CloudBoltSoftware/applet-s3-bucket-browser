@@ -131,7 +131,7 @@ const headers = [
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
   { title: 'Size', align: 'end', key: 'size' },
   { title: 'Storage Class', align: 'end', key: 'storage_class' },
-  { title: 'Actions', align: 'center', key: 'actions' }
+  { title: 'Actions', align: 'center', key: 'actions', sortable: false }
 ]
 const versionHeaders = [
   { title: 'Name', align: 'start', key: 'name' },
@@ -139,7 +139,7 @@ const versionHeaders = [
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
   { title: 'Size', align: 'start', key: 'size' },
   { title: 'Storage Class', align: 'start', key: 'storage_class' },
-  { title: 'Actions', align: 'start', key: 'actions' },
+  { title: 'Actions', align: 'start', key: 'actions', sortable: false },
   { title: '', align: 'center', key: 'data-table-expand', sortable: false }
 ]
 

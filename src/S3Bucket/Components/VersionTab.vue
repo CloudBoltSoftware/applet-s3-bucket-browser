@@ -146,7 +146,7 @@ const fetchVersionInfo = async () => {
   try {
     const formData = convertObjectToFormData(versionForm.value)
     const response = await api.base.instance.post(
-      `http://localhost:8001/ajax/s3-get-versions/${bucketResource.value.id}/`,
+      `ajax/s3-get-versions/${bucketResource.value.id}/`,
       formData
     )
     isLoading.value = false
@@ -161,7 +161,7 @@ const enableVersioning = async () => {
   try {
     const formData = convertObjectToFormData(versionEnableForm.value)
     const response = await api.base.instance.post(
-      `http://localhost:8001/ajax/s3-enable-versioning/${bucketResource.value.id}/`,
+      `ajax/s3-enable-versioning/${bucketResource.value.id}/`,
       formData
     )
     versionMessage.value = response.data.message

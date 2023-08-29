@@ -54,7 +54,7 @@
             </span>
           </VCol>
         </VCardText>
-        <VCardAction class="d-flex justify-end px-3">
+        <VCardAction class="d-flex justify-end px-3 mb-1">
           <VTooltip location="start" :text="formError">
             <template #activator="{ props: activatorProps }">
               <VIcon
@@ -132,7 +132,7 @@ async function submitCreateModal() {
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
     await api.base.instance.post(
-      `http://localhost:8001/ajax/s3-create-folder/${bucketResource.value.id}/`,
+      `ajax/s3-create-folder/${bucketResource.value.id}/`,
       formData
     )
     isSubmitting.value = false

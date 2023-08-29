@@ -51,7 +51,7 @@ const restoreItem = async () => {
   try {
     const formData = convertObjectToFormData(retoreItemForm.value)
     await api.base.instance.post(
-      `http://localhost:8001/ajax/s3-promote-version/${bucketResource.value.id}/`,
+      `ajax/s3-promote-version/${bucketResource.value.id}/`,
       formData
     )
     refreshResource()

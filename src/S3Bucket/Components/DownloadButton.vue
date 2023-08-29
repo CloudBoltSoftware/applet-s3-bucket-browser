@@ -65,7 +65,7 @@ async function downloadFiles() {
       // Alternatively, we could use `.then()` and `.catch()` to handle the response.
       // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
       const response = await api.base.instance.post(
-        `http://localhost:8001/ajax/s3-download-file/${bucketResource.value.id}/`,
+        `ajax/s3-download-file/${bucketResource.value.id}/`,
         formData
       )
       if (response.status === 200) {

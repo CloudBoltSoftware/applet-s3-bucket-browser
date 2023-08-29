@@ -28,9 +28,7 @@ export function useBuckets(api = {}) {
   const currentError = ref()
   const getBuckets = async () => {
     try {
-      const response = await api.base.instance.get(
-        'http://localhost:8001/ajax/s3-list-buckets/'
-      )
+      const response = await api.base.instance.get('ajax/s3-list-buckets/')
       buckets.value = response.data.bucket_info
       currentError.value = ''
     } catch (error) {
@@ -43,7 +41,7 @@ export function useBuckets(api = {}) {
     try {
       bucketLoading.value = true
       const response = await api.base.instance.get(
-        `http://localhost:8001/ajax/s3-browser-info/${resource.id}/`
+        `ajax/s3-browser-info/${resource.id}/`
       )
       bucketLocation.value = response.data.location
       bucketResource.value = response.data.resource
@@ -69,7 +67,7 @@ export function useBuckets(api = {}) {
     try {
       const formData = convertObjectToFormData(form)
       const response = await api.base.instance.post(
-        `http://localhost:8001/ajax/s3-browser-info/${bucketResource.value.id}/`,
+        `ajax/s3-browser-info/${bucketResource.value.id}/`,
         formData
       )
       updateResourceSelection(response.data)
@@ -89,7 +87,7 @@ export function useBuckets(api = {}) {
       bucketLoading.value = true
       const formData = convertObjectToFormData(flattenForm)
       const flattenResponse = await api.base.instance.post(
-        `http://localhost:8001/ajax/s3-browser-info/${bucketResource.value.id}/`,
+        `ajax/s3-browser-info/${bucketResource.value.id}/`,
         formData
       )
       isFlat.value = !isFlat.value
