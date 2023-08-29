@@ -17,7 +17,7 @@
 
 <script setup>
 /**
- * This component provides copy-to-clipboard feature
+ * This component from the CUI provides copy-to-clipboard feature
  * It displays an icon along with a tooltip
  * Accepts text-to-copy prop
  * For eg: <CopyText :text-to-copy="test_value" />
@@ -42,7 +42,7 @@ const copyToClipboard = () => {
 }
 
 const tooltipText = computed(() => {
-  return showCopied.value ? "Copied!" : "Copy to clipboard"
+  return showCopied.value ? 'Copied!' : 'Copy to clipboard'
 })
 </script>
 

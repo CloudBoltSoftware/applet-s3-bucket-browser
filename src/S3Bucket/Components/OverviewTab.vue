@@ -24,7 +24,9 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Key</div>
-          <p><CopyText :text-to-copy="sourceItem.name" />{{ sourceItem.name }}</p>
+          <p>
+            <CopyText :text-to-copy="sourceItem.name" />{{ sourceItem.name }}
+          </p>
         </div>
         <div id="kfp-parent" class="d-none">
           <p>{{ sourceItem.key }}</p>
@@ -33,7 +35,11 @@
       <VCol cols="6">
         <div class="mb-3">
           <div class="text-medium-emphasis">S3 URI</div>
-          <p><CopyText :text-to-copy="sourceItem.s3_uri" />{{ sourceItem.s3_uri }}</p>
+          <p>
+            <CopyText :text-to-copy="sourceItem.s3_uri" />{{
+              sourceItem.s3_uri
+            }}
+          </p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Amazon Resource Name (ARN)</div>
@@ -45,12 +51,14 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Object URL</div>
-          <p><CopyText :text-to-copy="sourceItem.object_url" />
+          <p>
+            <CopyText :text-to-copy="sourceItem.object_url" />
             <a
               target="_blank"
               :href="sourceItem.object_url"
               class="text-decoration-none text-primary"
-              >{{ sourceItem.object_url }}</a>
+              >{{ sourceItem.object_url }}</a
+            >
           </p>
         </div>
       </VCol>
