@@ -45,12 +45,13 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Object URL</div>
-          <a
-            target="_blank"
-            :href="sourceItem.object_url"
-            class="text-decoration-none text-primary"
-            >{{ sourceItem.object_url }}</a
-          >
+          <p><CopyText :text-to-copy="sourceItem.object_url" />
+            <a
+              target="_blank"
+              :href="sourceItem.object_url"
+              class="text-decoration-none text-primary"
+              >{{ sourceItem.object_url }}</a>
+          </p>
         </div>
       </VCol>
     </VRow>
