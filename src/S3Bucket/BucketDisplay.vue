@@ -56,7 +56,7 @@
     <VCard ref="dropZoneRef" flat>
       <NestedTable
         :is-version-mode="isVersionMode"
-        :data-table-items="dataTableItems"
+        :items="dataTableItems"
         :selected-items="selectedItems"
         @update:items="(val) => (selectedItems = val)"
       />

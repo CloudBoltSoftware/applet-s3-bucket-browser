@@ -32,10 +32,10 @@
       <VCardText class="pt-0">
         <VWindow v-model="tab">
           <VWindowItem value="overview">
-            <OverviewTab :source-item="sourceItem" />
+            <OverviewTab v-bind="mappedItem" />
           </VWindowItem>
           <VWindowItem value="versions">
-            <VersionTab :source-item="sourceItem" />
+            <VersionTab v-bind="mappedItem" />
           </VWindowItem>
         </VWindow>
       </VCardText>
@@ -54,17 +54,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import OverviewTab from '../Components/OverviewTab.vue';
 import VersionTab from '../Components/VersionTab.vue';
-
 /**
  * @typedef {Object} Props
  * @property {Object} Props.sourceItem - The selected S3 Bucket item
  */
 /** @type {Props} */
-
-defineProps({
+const props = defineProps({
   sourceItem: {
     type: Object,
     default: () => {}
@@ -73,6 +71,16 @@ defineProps({
 
 const tab = ref(null)
 const overviewDialog = ref(false)
+const mappedItem = computed(() => ({
+  ownerName: props.sourceItem.owner_name,
+  itemKey: props.sourceItem.key,
+  lastModified: props.sourceItem.last_modified,
+  itemType: props.sourceItem.item_type,
+  uri: props.sourceItem.s3_uri,
+  eTag: props.sourceItem.e_tag,
+  objectUrl: props.sourceItem.object_url,
+  ...props.sourceItem
+}))
 // TODO CMP-127 - Re-enable once Version updates are fixed.
 const hasVersionMode = ref(false)
 </script>

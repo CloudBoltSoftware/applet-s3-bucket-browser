@@ -3,7 +3,6 @@
   <VDataTable
     v-model:expanded="expanded"
     :headers="isVersionMode ? versionHeaders : headers"
-    :items="dataTableItems"
     :item-value="(item) => item"
     :loading="bucketLoading"
     show-select
@@ -23,7 +22,7 @@
           color="blue-darken-3"
           class="align-self-center"
         />
-        <FolderButton v-if="!item.raw.is_file" :item="item.raw" />
+        <FolderButton v-if="!item.raw.is_file" v-bind="item.raw" />
         <div v-else class="ml-4">{{ item.raw.name }}</div>
       </td>
     </template>
@@ -40,7 +39,12 @@
             :disabled="item.raw.is_delete_marker"
             @click="downloadFile(item.raw.download_url)"
           />
-          <RestoreButton v-if="isVersionMode" :item="item.raw" />
+          <RestoreButton
+            v-if="isVersionMode"
+            :item-key="item.raw.key"
+            :path="item.raw.path"
+            :version-id="item.raw.version_id"
+          />
           <RenameModal :name="item.raw.name" />
           <OverviewModal :source-item="item.raw" />
         </VBtnGroup>
@@ -73,7 +77,11 @@
               :disabled="entry.is_delete_marker"
               @click="downloadFile(entry.download_url)"
             />
-            <RestoreButton :item="entry" />
+            <RestoreButton
+              :item-key="entry.key"
+              :path="entry.path"
+              :version-id="entry.version_id"
+            />
           </VBtnGroup>
         </td>
         <td></td>
@@ -93,7 +101,6 @@ import RestoreButton from './RestoreButton.vue'
 /**
  * @typedef {Object} Props
  * @property {Boolean} Props.isVersionMode - Boolean if Bucket Version mode is on
- * @property {Array} Props.dataTableItems - The array of all the items for the dataTable
  * @property {Array} Props.selectedItems - The array of the selected dataTable items
  * @property {Function} Props.updatedSelectedItems - Function to update the array of the selected table items
  */
@@ -102,10 +109,6 @@ defineProps({
   isVersionMode: {
     type: Boolean,
     default: false
-  },
-  dataTableItems: {
-    type: Array,
-    default: () => []
   },
   selectedItems: {
     type: Array,
