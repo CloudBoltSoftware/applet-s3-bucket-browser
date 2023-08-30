@@ -4,7 +4,7 @@
       <VBtn
         v-bind="uploadProps"
         icon="mdi-file-upload"
-        title="Upload New File"
+        title="Upload New File or Folder"
         size="x-large"
       />
     </template>

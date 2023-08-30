@@ -7,7 +7,7 @@
       <VCardTitle class="d-inline-flex justify-space-between pb-0">
         <VTabs
           v-model="tab"
-          slider-color="black"
+          slider-color="green"
           height="50px"
           selected-class="bg-primary text-white"
         >
