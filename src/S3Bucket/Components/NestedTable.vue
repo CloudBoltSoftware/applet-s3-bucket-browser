@@ -32,7 +32,7 @@
     </template>
     <template #[`item.actions`]="{ item }">
       <td v-if="item.raw.is_file" class="d-inline-flex">
-        <VBtnGroup>
+        <VBtnGroup variant="text">
           <VBtn
             v-if="isVersionMode"
             icon="mdi-file-download"
@@ -66,7 +66,7 @@
         <td>{{ entry.size }}</td>
         <td>{{ entry.storage_class }}</td>
         <td>
-          <VBtnGroup>
+          <VBtnGroup variant="text">
             <VBtn
               icon="mdi-file-download"
               title="Download"
