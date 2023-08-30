@@ -40,8 +40,10 @@ export function useBuckets(api = {}) {
   const getResourceSelection = async (resource) => {
     try {
       bucketLoading.value = true
-      const response = await api.base.instance.get(
-        `ajax/s3-browser-info/${resource.id}/`
+      // POST instead of GET to make sure response returns the base path
+      const response = await api.base.instance.post(
+        `ajax/s3-browser-info/${resource.id}/`,
+        'path='
       )
       bucketLocation.value = response.data.location
       bucketResource.value = response.data.resource

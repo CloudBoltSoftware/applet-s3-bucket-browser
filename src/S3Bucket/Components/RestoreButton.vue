@@ -36,7 +36,6 @@ const api = inject('api')
 const { bucketResource, bucketPath, refreshResource, isFlat } = useBuckets(api)
 const restoreError = ref()
 const isDeleted = computed(() => props.item.is_delete_marker)
-console.log(props.item)
 const retoreItemForm = computed(() => ({
   version_id: props.item.version_id,
   key: props.item.key,

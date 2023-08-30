@@ -14,8 +14,8 @@
       <td class="d-inline-flex">
         <VIcon
           v-if="item.raw.nested_version"
-          icon="mdi-arrow-up-left"
-          class="ml-4"
+          icon="mdi-alpha-l"
+          class="ml-1"
         />
         <VIcon
           v-else
@@ -30,9 +30,8 @@
     <template #[`item.last_modified`]="{ item }">
       {{ item.raw.is_file ? parseDate(item.raw) : '' }}
     </template>
-    <template #[`item.size`]="{ item }">
-      {{ item.raw.is_file && !item.raw.is_delete_marker  ? item.raw.size : '' }}
-      <span v-if="item.raw.is_delete_marker" class="font-weight-thin">Deleted</span>
+    <template #[`item.size`]="{ item }" >
+      <span :class="item.raw.is_delete_marker ? 'font-weight-thin' : ''">{{ item.raw.is_delete_marker ? 'Deleted' : item.raw.size }}</span>
     </template>
     <template #[`item.actions`]="{ item }">
       <td v-if="item.raw.is_file" class="d-inline-flex">
@@ -61,13 +60,15 @@
       <tr v-for="(entry, idx) in item.raw?.versions" :key="idx">
         <td></td>
         <td>
-          <VIcon icon="mdi-arrow-up-left" class="ml-4 mt-n1" />
+          <VIcon icon="mdi-alpha-l" class="ml-1 mt-n1" />
           <span class="mx-2">{{ entry.version_id }}</span
           ><span class="ml-2 text-disabled">Version Id</span>
         </td>
         <td>{{ item.raw.item_type }}</td>
         <td>{{ parseDate(entry) }}</td>
-        <td>{{ entry.size }}</td>
+        <td :class="entry.is_delete_marker ? 'font-weight-thin' : ''">
+          {{ entry.size }}
+        </td>
         <td>{{ entry.storage_class }}</td>
         <td>
           <VBtnGroup>
