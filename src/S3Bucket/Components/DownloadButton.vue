@@ -1,16 +1,5 @@
 <template>
-  <VTooltip location="start" :text="downloadError">
-    <template #activator="{ props: activatorProps }">
-      <VIcon
-        v-if="downloadError"
-        v-bind="activatorProps"
-        color="error"
-        size="x-small"
-        icon="mdi-alert-circle"
-        class="mt-1"
-      />
-    </template>
-  </VTooltip>
+  <ErrorIcon :error="downloadError" />
   <VBtn
     icon="mdi-file-download"
     :disabled="isDisabled"
@@ -24,6 +13,7 @@
 import { computed, inject, ref } from 'vue';
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
+import ErrorIcon from './ErrorIcon.vue';
 /**
  * @typedef {Object} Props
  * @property {Array} Props.selectedItems - The selected S3 Bucket items
@@ -68,7 +58,7 @@ async function downloadFiles() {
       }
     } catch (error) {
       // When using API calls, it's a good idea to catch errors and meaningfully display them.
-      downloadError.value = `(${error.code}) ${error.name}: ${error.message}`
+      downloadError.value = error
     }
   })
 }

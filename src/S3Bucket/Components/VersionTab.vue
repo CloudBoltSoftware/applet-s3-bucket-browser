@@ -45,38 +45,27 @@
     </VBanner>
     <VDataTable
       :headers="versionHeaders"
-      :items="sourceItem?.versions"
+      :items="versions"
       :show-expand="false"
     >
       <template #[`item.name`]>
-        {{ sourceItem.name }}
+        {{ name }}
       </template>
       <template #[`item.item_type`]>
-        {{ sourceItem.item_type }}
+        {{ itemType }}
       </template>
       <template #[`item.last_modified`]="{ item }">
         {{ parseDate(item.raw) }}
       </template>
       <template #[`item.actions`]="{ item }">
-        <VTooltip location="start" :text="formError">
-          <template #activator="{ props: activatorProps }">
-            <VIcon
-              v-if="formError"
-              v-bind="activatorProps"
-              color="error"
-              size="large"
-              icon="mdi-alert-circle"
-              class="mt-1"
-            />
-          </template>
-        </VTooltip>
+        <ErrorIcon size="large" :error="formError" />
         <VBtnGroup>
           <VBtn
             icon="mdi-file-download"
             title="Download"
             @click="() => downloadFile(item.raw.download_url)"
           />
-          <RestoreButton :item="item.raw" />
+          <RestoreButton :item-key="item.raw.key" :path="item.raw.path" :version-id="item.raw.version_id" />
         </VBtnGroup>
       </template>
     </VDataTable>
@@ -87,21 +76,29 @@
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
+import ErrorIcon from './ErrorIcon.vue';
 import RestoreButton from './RestoreButton.vue';
 
 /**
  * @typedef {Object} Props
- * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance
- * @property {Object} Props.sourceItem - The S3 Bucket item
- * @property {String} Props.location - The S3 Bucket location
- * @property {Object} Props.resource - The S3 Bucket resource
+ * @property {String} Props.name - The name of the item
+ * @property {Array} Props.versions - The versions of the S3 Bucket item
+ * @property {String} Props.itemType - The type of the S3 Bucket item
  */
 /** @type {Props} */
 
 const props = defineProps({
-  sourceItem: {
-    type: Object,
-    default: () => {}
+  name: {
+    type: String,
+    default: ''
+  },
+  versions: {
+    type: Array,
+    default: () => []
+  },
+  itemType: {
+    type: String,
+    default: ''
   }
 })
 // TODO CMP-127 - Re-enable once Version updates are fixed. Update to handle versioning
@@ -140,7 +137,7 @@ const versionHeaders = [
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
   { title: 'Size', align: 'start', key: 'size' },
   { title: 'Storage Class', align: 'start', key: 'storage_class' },
-  { title: 'Actions', align: 'start', key: 'actions' }
+  { title: 'Actions', align: 'start', key: 'actions', sortable: false }
 ]
 
 const fetchVersionInfo = async () => {
@@ -169,7 +166,7 @@ const enableVersioning = async () => {
     versionMessage.value = response.data.message
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    formError.value = `(${error.code}) ${error.name}: ${error.message}`
+    formError.value = error
   }
 }
 

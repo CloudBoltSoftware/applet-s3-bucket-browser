@@ -1,16 +1,5 @@
 <template>
-  <VTooltip location="start" :text="restoreError">
-    <template #activator="{ props: activatorProps }">
-      <VIcon
-        v-if="restoreError"
-        v-bind="activatorProps"
-        color="error"
-        size="x-small"
-        icon="mdi-alert-circle"
-        class="mt-1"
-      />
-    </template>
-  </VTooltip>
+  <ErrorIcon :error="restoreError" />
   <VBtn icon="mdi-file-undo" title="Restore File" @click="restoreItem" />
 </template>
 
@@ -18,17 +7,27 @@
 import { computed, inject, ref } from 'vue';
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
-
+import ErrorIcon from './ErrorIcon.vue';
 /**
  * @typedef {Object} Props
- * @property {Object} Props.item - The S3 Bucket file item
+ * @property {String} Props.itemKey - The file item key
+ * @property {String} Props.path - The file item path
+ * @property {String} Props.versionId - The version id for the Bucket item
  */
 /** @type {Props} */
 
 const props = defineProps({
-  item: {
-    type: Object,
-    default: () => {}
+  itemKey: {
+    type: String,
+    default: ''
+  },
+  path: {
+    type: String,
+    default: ''
+  },
+  versionId: {
+    type: String,
+    default: ''
   }
 })
 
@@ -39,9 +38,9 @@ const restoreError = ref()
 // TODO CMP-127 - This button requires versioning and additional work
 // Currently is disabled in the example
 const retoreItemForm = computed(() => ({
-  key: props.item.key,
-  path: props.item.path,
-  version_id: props.item.version_id,
+  key: props.itemKey,
+  path: props.path,
+  version_id: props.versionId,
   restore: 'True'
 }))
 
@@ -56,7 +55,7 @@ const restoreItem = async () => {
     refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    restoreError.value = `(${error.code}) ${error.name}: ${error.message}`
+    restoreError.value = error
   }
 }
 </script>

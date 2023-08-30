@@ -25,8 +25,8 @@
         />
       </VCardTitle>
       <VCardActions class="d-flex justify-center ma-2">
-        <FileUpload @update:closeDialog="uploadDialog = false" />
-        <FolderUpload @update:closeDialog="uploadDialog = false" />
+        <FileUpload @closeDialog="uploadDialog = false" />
+        <FolderUpload @closeDialog="uploadDialog = false" />
       </VCardActions>
     </VCard>
   </VDialog>
