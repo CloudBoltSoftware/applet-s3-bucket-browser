@@ -40,15 +40,10 @@ const { bucketResource, bucketLocation } = useBuckets()
 const downloadError = ref()
 
 // Disabled download if there are no items, or folder items
-const isDisabled = computed(() => {
-  if (
-    props.selectedItems.length === 0 ||
-    props.selectedItems.findIndex((entry) => !entry.is_file) !== -1
-  ) {
-    return true
-  }
-  return false
-})
+const isDisabled = computed(() => (
+  props.selectedItems.length === 0 ||
+  props.selectedItems.every((entry) => entry.is_file)
+)
 
 const filePaths = computed(() =>
   props.selectedItems.map((item) => ({
