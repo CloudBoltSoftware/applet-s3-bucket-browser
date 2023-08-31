@@ -33,7 +33,7 @@ const downloadError = ref()
 const isDisabled = computed(() => (
   props.selectedItems.length === 0 ||
   props.selectedItems.every((entry) => entry.is_file)
-)
+))
 
 const filePaths = computed(() =>
   props.selectedItems.map((item) => ({
