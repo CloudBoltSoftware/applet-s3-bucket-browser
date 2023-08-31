@@ -5,7 +5,12 @@
     @update:model-value="(val) => !val && onCancel()"
   >
     <template #activator="{ props: renameProps }">
-      <VBtn v-bind="renameProps" :disabled="isDeleted" icon="mdi-pencil-circle" title="Rename" />
+      <VBtn
+        v-bind="renameProps"
+        :disabled="isDeleted"
+        icon="mdi-pencil-circle"
+        title="Rename"
+      />
     </template>
     <VCard class="pa-3">
       <VForm
@@ -81,7 +86,6 @@ import { useBuckets } from '../../helpers/useBuckets';
  * @property {Boolean} Props.isDeleted - Boolean if the item has a delete marker
  */
 /** @type {Props} */
-
 const props = defineProps({
   name: {
     type: String,

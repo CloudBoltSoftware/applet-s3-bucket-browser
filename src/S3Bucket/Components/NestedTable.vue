@@ -3,7 +3,6 @@
   <VDataTable
     v-model:expanded="expanded"
     :headers="isVersionMode ? versionHeaders : headers"
-    :items="dataTableItems"
     :item-value="(item) => item"
     :loading="bucketLoading"
     show-select
@@ -12,26 +11,24 @@
   >
     <template #[`item.name`]="{ item }">
       <td class="d-inline-flex">
-        <VIcon
-          v-if="item.raw.nested_version"
-          icon="mdi-alpha-l"
-          class="ml-1"
-        />
+        <VIcon v-if="item.raw.nested_version" icon="mdi-alpha-l" class="ml-1" />
         <VIcon
           v-else
           :icon="item.raw.is_file ? 'mdi-file' : 'mdi-folder'"
           color="blue-darken-3"
           class="align-self-center"
         />
-        <FolderButton v-if="!item.raw.is_file" :item="item.raw" />
+        <FolderButton v-if="!item.raw.is_file" v-bind="item.raw" />
         <div v-else class="ml-4">{{ item.raw.name }}</div>
       </td>
     </template>
     <template #[`item.last_modified`]="{ item }">
       {{ item.raw.is_file ? parseDate(item.raw) : '' }}
     </template>
-    <template #[`item.size`]="{ item }" >
-      <span :class="item.raw.is_delete_marker ? 'font-weight-thin' : ''">{{ item.raw.is_delete_marker ? 'Deleted' : item.raw.size }}</span>
+    <template #[`item.size`]="{ item }">
+      <span :class="item.raw.is_delete_marker ? 'font-weight-thin' : ''">{{
+        item.raw.is_delete_marker ? 'Deleted' : item.raw.size
+      }}</span>
     </template>
     <template #[`item.actions`]="{ item }">
       <td v-if="item.raw.is_file" class="d-inline-flex">
@@ -43,8 +40,16 @@
             :disabled="item.raw.is_delete_marker"
             @click="downloadFile(item.raw.download_url)"
           />
-          <RestoreButton v-if="isVersionMode" :item="item.raw" />
-          <RenameModal :name="item.raw.name" :is-deleted="item.raw.is_delete_marker"/>
+          <RestoreButton
+            v-if="isVersionMode"
+            :item-key="item.raw.key"
+            :path="item.raw.path"
+            :version-id="item.raw.version_id"
+          />
+          <RenameModal
+            :name="item.raw.name"
+            :is-deleted="item.raw.is_delete_marker"
+          />
           <OverviewModal :source-item="item.raw" />
         </VBtnGroup>
       </td>
@@ -78,7 +83,11 @@
               :disabled="entry.is_delete_marker"
               @click="downloadFile(entry.download_url)"
             />
-            <RestoreButton :item="entry" />
+            <RestoreButton
+              :item-key="entry.key"
+              :path="entry.path"
+              :version-id="entry.version_id"
+            />
           </VBtnGroup>
         </td>
         <td></td>
@@ -98,7 +107,6 @@ import RestoreButton from './RestoreButton.vue'
 /**
  * @typedef {Object} Props
  * @property {Boolean} Props.isVersionMode - Boolean if Bucket Version mode is on
- * @property {Array} Props.dataTableItems - The array of all the items for the dataTable
  * @property {Array} Props.selectedItems - The array of the selected dataTable items
  * @property {Function} Props.updatedSelectedItems - Function to update the array of the selected table items
  */
@@ -107,10 +115,6 @@ defineProps({
   isVersionMode: {
     type: Boolean,
     default: false
-  },
-  dataTableItems: {
-    type: Array,
-    default: () => []
   },
   selectedItems: {
     type: Array,

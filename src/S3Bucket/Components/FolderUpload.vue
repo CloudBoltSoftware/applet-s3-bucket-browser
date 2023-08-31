@@ -47,18 +47,7 @@
           />
         </VCardText>
         <VCardActions class="d-flex justify-end px-3 mb-1">
-          <VTooltip location="start" :text="formError">
-            <template #activator="{ props: activatorProps }">
-              <VIcon
-                v-if="formError"
-                v-bind="activatorProps"
-                color="error"
-                size="large"
-                icon="mdi-alert-circle"
-                class="mt-1"
-              />
-            </template>
-          </VTooltip>
+          <ErrorIcon size="large" :error="formError" />
           <VBtn
             prepend-icon="mdi-close"
             variant="flat"
@@ -89,10 +78,11 @@
 import { inject, ref } from 'vue';
 import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
+import ErrorIcon from './ErrorIcon.vue';
 
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
-const emit = defineEmits(['update:closeDialog'])
+const emit = defineEmits(['closeDialog'])
 const isUploading = ref(false)
 const uploadFolder = ref()
 const uploadFolderForm = ref({
@@ -105,7 +95,7 @@ const folderDialog = ref(false)
 const requiredRule = [(value) => value.length > 0 || 'This field is required']
 
 const onCancel = () => {
-  emit('update:closeDialog')
+  emit('closeDialog')
   folderDialog.value = false
   formError.value = ''
   uploadFolder.value = []
@@ -126,14 +116,14 @@ async function folderUploadModal() {
       `ajax/s3-upload-new-folder/${bucketResource.value.id}/`,
       formData
     )
+    emit('closeDialog')
     isUploading.value = false
     folderDialog.value = false
     uploadFolder.value = []
-    emit('update:closeDialog')
     refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    formError.value = `(${error.code}) ${error.name}: ${error.message}`
+    formError.value = error
     formIsValid.value = false
     isUploading.value = false
   }

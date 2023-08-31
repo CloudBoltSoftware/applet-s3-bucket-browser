@@ -1,44 +1,53 @@
 <template>
-  <VTooltip location="start" :text="restoreError">
-    <template #activator="{ props: activatorProps }">
-      <VIcon
-        v-if="restoreError"
-        v-bind="activatorProps"
-        color="error"
-        size="x-small"
-        icon="mdi-alert-circle"
-        class="mt-1"
-      />
-    </template>
-  </VTooltip>
-  <VBtn icon="mdi-file-undo" title="Restore File" :disabled="isDeleted" @click="restoreItem" />
+  <ErrorIcon :error="restoreError" />
+  <VBtn
+    icon="mdi-file-undo"
+    title="Restore File"
+    :disabled="isDeleted"
+    @click="restoreItem"
+  />
 </template>
 
 <script setup>
 import { computed, inject, ref } from 'vue';
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
-
+import ErrorIcon from './ErrorIcon.vue';
 /**
  * @typedef {Object} Props
- * @property {Object} Props.item - The S3 Bucket file item
+ * @property {String} Props.itemKey - The file item key
+ * @property {String} Props.path - The file item path
+ * @property {Boolean} Props.isDeleteMarker - Boolean if the item is deleted
+ * @property {String} Props.versionId - The version id for the Bucket item
  */
 /** @type {Props} */
 
 const props = defineProps({
-  item: {
-    type: Object,
-    default: () => {}
+  itemKey: {
+    type: String,
+    default: ''
+  },
+  path: {
+    type: String,
+    default: ''
+  },
+  isDeleteMarker: {
+    type: Boolean,
+    default: false
+  },
+  versionId: {
+    type: String,
+    default: ''
   }
 })
 
 const api = inject('api')
 const { bucketResource, bucketPath, refreshResource, isFlat } = useBuckets(api)
 const restoreError = ref()
-const isDeleted = computed(() => props.item.is_delete_marker)
+const isDeleted = computed(() => props.isDeleteMarker)
 const retoreItemForm = computed(() => ({
-  version_id: props.item.version_id,
-  key: props.item.key,
+  version_id: props.versionId,
+  key: props.itemKey,
   state: JSON.stringify({
     full_path: bucketPath.value,
     flat: isFlat.value
@@ -56,7 +65,7 @@ const restoreItem = async () => {
     refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    restoreError.value = `(${error.code}) ${error.name}: ${error.message}`
+    restoreError.value = error
   }
 }
 </script>

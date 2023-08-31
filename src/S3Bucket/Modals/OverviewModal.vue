@@ -32,10 +32,10 @@
       <VCardText class="pt-0">
         <VWindow v-model="tab">
           <VWindowItem value="overview">
-            <OverviewTab :source-item="sourceItem" :has-versions="hasVersionMode" />
+            <OverviewTab v-bind="mappedItem" :has-versions="hasVersionMode" />
           </VWindowItem>
           <VWindowItem value="versions">
-            <VersionTab :source-item="sourceItem" :has-versions="hasVersionMode" />
+            <VersionTab v-bind="mappedItem" :has-versions="hasVersionMode" />
           </VWindowItem>
         </VWindow>
       </VCardText>
@@ -65,8 +65,7 @@ import VersionTab from '../Components/VersionTab.vue';
  * @property {Boolean} Props.hasVersions - Boolean if the item has versioning
  */
 /** @type {Props} */
-
-defineProps({
+const props = defineProps({
   sourceItem: {
     type: Object,
     default: () => {}
@@ -74,13 +73,23 @@ defineProps({
   hasVersions: {
     type: Boolean,
     default: false
-  },
+  }
 })
 
 const { bucketState } = useBuckets()
 const tab = ref(null)
 const overviewDialog = ref(false)
 const hasVersionMode = computed(() => bucketState.value.versioning_enabled)
-
+const mappedItem = computed(() => ({
+  ownerName: props.sourceItem.owner_name,
+  itemKey: props.sourceItem.key,
+  lastModified: props.sourceItem.last_modified,
+  itemType: props.sourceItem.item_type,
+  uri: props.sourceItem.s3_uri,
+  eTag: props.sourceItem.e_tag,
+  objectUrl: props.sourceItem.object_url,
+  isDeleteMarker: props.sourceItem.is_delete_marker,
+  ...props.sourceItem
+}))
 </script>
 <style scoped></style>

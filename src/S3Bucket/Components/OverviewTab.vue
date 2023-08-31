@@ -4,7 +4,7 @@
       <VCol cols="6">
         <div class="mb-3">
           <div class="text-medium-emphasis">Owner</div>
-          <p>{{ owner }}</p>
+          <p>{{ versionOwner }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">AWS Region</div>
@@ -12,51 +12,45 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Last Modified</div>
-          <p>{{ new Date(sourceItem.last_modified).toString() }}</p>
+          <p>{{ new Date(lastModified).toString() }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Size</div>
-          <p>{{ file_size }}</p>
+          <p>{{ versionSize }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Type</div>
-          <p>{{ sourceItem.item_type }}</p>
+          <p>{{ itemType }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Key</div>
-          <p>
-            <CopyText :text-to-copy="sourceItem.name" />{{ sourceItem.name }}
-          </p>
-        </div>
-        <div id="kfp-parent" class="d-none">
-          <p>{{ sourceItem.key }}</p>
+          <p><CopyText :text-to-copy="itemKey" />{{ itemKey }}</p>
         </div>
       </VCol>
       <VCol cols="6">
         <div class="mb-3">
           <div class="text-medium-emphasis">S3 URI</div>
-          <p>
-            <CopyText :text-to-copy="sourceItem.s3_uri" />{{
-              sourceItem.s3_uri
-            }}
-          </p>
+          <p><CopyText :text-to-copy="uri" />{{ uri }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Amazon Resource Name (ARN)</div>
-          <p><CopyText :text-to-copy="sourceItem.arn" />{{ sourceItem.arn }}</p>
+          <p><CopyText :text-to-copy="arn" />{{ arn }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Entity Tag (ETag)</div>
-          <p><CopyText :text-to-copy="eTag" />{{ eTag }}</p>
+          <p><CopyText :text-to-copy="versionETag" />{{ versionETag }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Object URL</div>
-          <p><CopyText :text-to-copy="object_url" /><a
-            target="_blank"
-            :href="object_url"
-            class="text-decoration-none text-primary"
-            >{{ object_url }}</a
-          ></p>
+          <p>
+            <CopyText :text-to-copy="versionObjectUrl" />
+            <a
+              target="_blank"
+              :href="versionObjectUrl"
+              class="text-decoration-none text-primary"
+              >{{ versionObjectUrl }}</a
+            >
+          </p>
         </div>
       </VCol>
     </VRow>
@@ -68,54 +62,97 @@ import { computed } from 'vue';
 import { useBuckets } from '../../helpers/useBuckets';
 import CopyText from './CopyText.vue';
 /**
- * @typedef {Object} sourceItem
- * @property {String} owner_name
- * @property {String} last_modified
- * @property {String} size
- * @property {String} item_type
- * @property {String} name
- * @property {String} key
- * @property {String} keyFilePath
- * @property {String} s3_uri
- * @property {String} arn
- * @property {String} e_tag
- * @property {String} object_url
- * @property {Object} latest_version // 
- * @property {String} version_id // 
- * @property {Array} versions //
- */
-
-/**
  * @typedef {Object} Props
- * @property {Object} Props.sourceItem - The selected S3 Bucket item
+ * @property {String} Props.ownerName - The owner's name or id
+ * @property {String} Props.lastModified  - The last modified date of the item
+ * @property {String} Props.size - The size as a string with a label
+ * @property {String} Props.itemType - The item file type
+ * @property {String} Props.name - The name of the item
+ * @property {String} Props.itemKey - The key for the item
+ * @property {String} Props.uri - The aws s3 uri https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3URI.html
+ * @property {String} Props.arn - The arn (Amazon Resource Name) https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html
+ * @property {String} Props.eTag - The etag (entity tag) of the item https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
+ * @property {String} Props.objectUrl - The item object url https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-bucket-intro.html
  * @property {Boolean} Props.hasVersions - Boolean if the item has versioning
  */
 /** @type {Props} */
 
 const props = defineProps({
-  sourceItem: {
-    type: Object,
-    default: () => {}
+  ownerName: {
+    type: String,
+    default: ''
+  },
+  lastModified: {
+    type: String,
+    default: ''
+  },
+  size: {
+    type: String,
+    default: ''
+  },
+  itemType: {
+    type: String,
+    default: ''
+  },
+  isDeleteMarker: {
+    type: Boolean,
+    default: false
+  },
+  name: {
+    type: String,
+    default: ''
+  },
+  itemKey: {
+    type: String,
+    default: ''
+  },
+  uri: {
+    type: String,
+    default: ''
+  },
+  arn: {
+    type: String,
+    default: ''
+  },
+  eTag: {
+    type: String,
+    default: ''
+  },
+  objectUrl: {
+    type: String,
+    default: ''
+  },
+  versions: {
+    type: Array,
+    default: () => []
   },
   hasVersions: {
     type: Boolean,
     default: false
-  },
+  }
 })
-
 const { bucketLocation } = useBuckets()
-const existVersion = computed(() => props.sourceItem?.versions.find((version) => version.is_delete_marker === false))
-const eTag = computed(() =>
-  props.hasVersions ? existVersion.value.e_tag.replace(/&quot;/g, '') : props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '') : ''
+const existVersion = computed(() =>
+  props.versions?.find((version) => version.is_delete_marker === false)
 )
-const object_url = computed(() => 
-  props.hasVersions && props.sourceItem.is_delete_marker ? `${existVersion.value.object_url}?versionId=${existVersion.value.version_id}` : props.sourceItem.object_url
+
+const versionETag = computed(() =>
+  props.hasVersions
+    ? existVersion.value.e_tag.replace(/&quot;/g, '')
+    : props.eTag
+    ? props.eTag.replace(/&quot;/g, '')
+    : ''
 )
-const file_size = computed(() => 
-  props.hasVersions ? existVersion.value.size : props.sourceItem.size
+const versionObjectUrl = computed(() =>
+  props.hasVersions && props.isDeleteMarker
+    ? `${existVersion.value.object_url}?versionId=${existVersion.value.version_id}`
+    : props.objectUrl
 )
-const owner = computed(() => 
-  props.hasVersions ? existVersion.value.owner_name : props.sourceItem.owner_name
+const versionSize = computed(() =>
+  props.hasVersions ? existVersion.value.size : props.size
+)
+const versionOwner = computed(() =>
+  props.hasVersions ? existVersion.value.owner_name : props.ownerName
 )
 </script>
 <style scoped></style>

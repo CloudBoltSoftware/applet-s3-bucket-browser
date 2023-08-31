@@ -117,7 +117,7 @@ const deleteForm = computed(() => ({
   state: JSON.stringify({
     full_path: bucketPath.value,
     flat: isFlat.value
-  }),
+  })
 }))
 
 async function deleteModal() {

@@ -9,8 +9,8 @@
         <div class="mr-6">
           <p class="text-h5 mb-2">
             Bucket
-            <span class="font-weight-medium">{{ bucketResource.name }}</span> doesn't
-            have Bucket Versioning enabled
+            <span class="font-weight-medium">{{ bucketResource.name }}</span>
+            doesn't have Bucket Versioning enabled
           </p>
           <p class="text-body-1">
             We recommend that you enable Bucket Versioning to help protect
@@ -45,31 +45,20 @@
     </VBanner>
     <VDataTable
       :headers="versionHeaders"
-      :items="sourceItem?.versions"
+      :items="versions"
       :show-expand="false"
     >
       <template #[`item.name`]>
-        {{ sourceItem.name }}
+        {{ name }}
       </template>
       <template #[`item.item_type`]>
-        {{ sourceItem.item_type }}
+        {{ itemType }}
       </template>
       <template #[`item.last_modified`]="{ item }">
         {{ parseDate(item.raw) }}
       </template>
       <template #[`item.actions`]="{ item }">
-        <VTooltip location="start" :text="formError">
-          <template #activator="{ props: activatorProps }">
-            <VIcon
-              v-if="formError"
-              v-bind="activatorProps"
-              color="error"
-              size="large"
-              icon="mdi-alert-circle"
-              class="mt-1"
-            />
-          </template>
-        </VTooltip>
+        <ErrorIcon size="large" :error="formError" />
         <VBtnGroup>
           <VBtn
             icon="mdi-file-download"
@@ -77,7 +66,11 @@
             :disabled="item.raw.is_delete_marker"
             @click="() => downloadFile(item.raw.download_url)"
           />
-          <RestoreButton :item="item.raw" />
+          <RestoreButton
+            :item-key="item.raw.key"
+            :path="item.raw.path"
+            :version-id="item.raw.version_id"
+          />
         </VBtnGroup>
       </template>
     </VDataTable>
@@ -85,27 +78,48 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
-import RestoreButton from './RestoreButton.vue';
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
+import ErrorIcon from './ErrorIcon.vue'
+import RestoreButton from './RestoreButton.vue'
 
 /**
  * @typedef {Object} Props
- * @property {Object} Props.sourceItem - The S3 Bucket item
  * @property {Boolean} Props.hasVersions - Boolean if the item has versioning enabled
+ * @property {String} Props.name - The name of the item
+ * @property {Array} Props.versions - The versions of the S3 Bucket item
+ * @property {String} Props.itemType - The type of the S3 Bucket item
+ * @property {String} Props.itemKey - The key for the item
+ * @property {String} Props.eTag - The etag (entity tag) of the item https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
  */
 /** @type {Props} */
 
 const props = defineProps({
-  sourceItem: {
-    type: Object,
-    default: () => {}
-  },
   hasVersions: {
     type: Boolean,
     default: false
   },
+  name: {
+    type: String,
+    default: ''
+  },
+  versions: {
+    type: Array,
+    default: () => []
+  },
+  itemType: {
+    type: String,
+    default: ''
+  },
+  itemKey: {
+    type: String,
+    default: ''
+  },
+  eTag: {
+    type: String,
+    default: ''
+  }
 })
 const api = inject('api')
 const { bucketResource } = useBuckets()
@@ -114,12 +128,12 @@ const formError = ref()
 const versionInfo = ref(true)
 const versionMessage = ref('')
 
-const eTag = computed(() =>
-  props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '') : ''
+const adjustedETag = computed(() =>
+  props.eTag ? props.eTag.replace(/&quot;/g, '') : ''
 )
 const versionForm = computed(() => ({
-  e_tag: encodeURIComponent(eTag.value),
-  key: encodeURIComponent(props.sourceItem.key)
+  e_tag: encodeURIComponent(adjustedETag.value),
+  key: encodeURIComponent(props.itemKey)
 }))
 const versionEnableForm = computed(() => ({
   bucket_name: encodeURIComponent(bucketResource.value.name)
@@ -139,7 +153,7 @@ const versionHeaders = [
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
   { title: 'Size', align: 'start', key: 'size' },
   { title: 'Storage Class', align: 'start', key: 'storage_class' },
-  { title: 'Actions', align: 'start', key: 'actions' }
+  { title: 'Actions', align: 'start', key: 'actions', sortable: false }
 ]
 
 const fetchVersionInfo = async () => {
@@ -167,7 +181,7 @@ const enableVersioning = async () => {
     versionMessage.value = response.data.message
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    formError.value = `(${error.code}) ${error.name}: ${error.message}`
+    formError.value = error
   }
 }
 

@@ -56,7 +56,7 @@
     <VCard ref="dropZoneRef" flat>
       <NestedTable
         :is-version-mode="isVersionMode"
-        :data-table-items="dataTableItems"
+        :items="dataTableItems"
         :selected-items="selectedItems"
         @update:items="(val) => (selectedItems = val)"
       />
@@ -103,9 +103,13 @@ const dataTableItems = computed(() => {
   }
   // Removed all items with delete_markers, or if the item is not the latest version
   return list.filter((item) =>
-  item.is_delete_marker ? false :
-    !item.is_file ? 
-      item : item.is_latest ? item : false
+    item.is_delete_marker
+      ? false
+      : !item.is_file
+      ? item
+      : item.is_latest
+      ? item
+      : false
   )
 })
 </script>

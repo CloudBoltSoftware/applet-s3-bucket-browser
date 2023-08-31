@@ -1,16 +1,5 @@
 <template>
-  <VTooltip location="start" :text="downloadError">
-    <template #activator="{ props: activatorProps }">
-      <VIcon
-        v-if="downloadError"
-        v-bind="activatorProps"
-        color="error"
-        size="x-small"
-        icon="mdi-alert-circle"
-        class="mt-1"
-      />
-    </template>
-  </VTooltip>
+  <ErrorIcon :error="downloadError" />
   <VBtn
     icon="mdi-file-download"
     :disabled="isDisabled"
@@ -24,6 +13,7 @@
 import { computed, inject, ref } from 'vue';
 import { convertObjectToFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
+import ErrorIcon from './ErrorIcon.vue';
 /**
  * @typedef {Object} Props
  * @property {Array} Props.selectedItems - The selected S3 Bucket items
@@ -40,15 +30,11 @@ const { bucketResource, bucketLocation } = useBuckets()
 const downloadError = ref()
 
 // Disabled download if there are no items, or folder items
-const isDisabled = computed(() => {
-  if (
+const isDisabled = computed(
+  () =>
     props.selectedItems.length === 0 ||
-    props.selectedItems.findIndex((entry) => !entry.is_file) !== -1
-  ) {
-    return true
-  }
-  return false
-})
+    props.selectedItems.every((entry) => entry.is_file)
+)
 
 const filePaths = computed(() =>
   props.selectedItems.map((item) => ({
@@ -73,7 +59,7 @@ async function downloadFiles() {
       }
     } catch (error) {
       // When using API calls, it's a good idea to catch errors and meaningfully display them.
-      downloadError.value = `(${error.code}) ${error.name}: ${error.message}`
+      downloadError.value = error
     }
   })
 }
