@@ -135,7 +135,6 @@ async function deleteModal() {
     // In this case, we'll just log the error to the console.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
     isDeleting.value = false
-    deleteDialog.value = false
   }
 }
 </script>
