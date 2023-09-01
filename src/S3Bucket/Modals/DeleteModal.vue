@@ -1,5 +1,9 @@
 <template>
-  <VDialog v-model="deleteDialog" width="1024">
+  <VDialog
+    v-model="deleteDialog"
+    width="1024"
+    @update:model-value="(val) => !val && onCancel()"
+  >
     <template #activator="{ props: deleteProps }">
       <VBtn
         v-bind="deleteProps"
@@ -18,7 +22,7 @@
             title="Close this dialog"
             data-dismiss="modal"
             variant="text"
-            @click="deleteDialog = false"
+            @click="onCancel"
           />
         </VCardTitle>
         <VCardText class="py-0 ml-3">
@@ -49,7 +53,7 @@
             variant="flat"
             size="large"
             class="px-4 mx-2"
-            @click="deleteDialog = false"
+            @click="onCancel"
             >Cancel</VBtn
           >
           <VBtn
@@ -115,6 +119,11 @@ const filePath = computed(() => {
 const deleteForm = computed(() => ({
   all_files_path: JSON.stringify(filePath.value)
 }))
+
+const onCancel = () => {
+  deleteDialog.value = false
+  formError.value = ''
+}
 
 async function deleteModal() {
   try {
