@@ -65,7 +65,11 @@
             title="Download"
             @click="() => downloadFile(item.raw.download_url)"
           />
-          <RestoreButton :item-key="item.raw.key" :path="item.raw.path" :version-id="item.raw.version_id" />
+          <RestoreButton
+            :item-key="item.raw.key"
+            :path="item.raw.path"
+            :version-id="item.raw.version_id"
+          />
         </VBtnGroup>
       </template>
     </VDataTable>
@@ -73,11 +77,11 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
-import ErrorIcon from './ErrorIcon.vue';
-import RestoreButton from './RestoreButton.vue';
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
+import ErrorIcon from './ErrorIcon.vue'
+import RestoreButton from './RestoreButton.vue'
 
 /**
  * @typedef {Object} Props
@@ -99,6 +103,14 @@ const props = defineProps({
   itemType: {
     type: String,
     default: ''
+  },
+  itemKey: {
+    type: String,
+    default: ''
+  },
+  eTag: {
+    type: String,
+    default: ''
   }
 })
 // TODO CMP-127 - Re-enable once Version updates are fixed. Update to handle versioning
@@ -110,11 +122,11 @@ const api = inject('api')
 const { bucketLocation, bucketResource } = useBuckets()
 
 const eTag = computed(() =>
-  props.sourceItem?.e_tag ? props.sourceItem.e_tag.replace(/&quot;/g, '"') : ''
+  props.eTag ? props.eTag.replace(/&quot;/g, '') : ''
 )
 const versionForm = computed(() => ({
   e_tag: encodeURIComponent(eTag.value),
-  key: encodeURIComponent(props.sourceItem.key),
+  key: encodeURIComponent(props.itemKey),
   location: encodeURIComponent(bucketLocation.value)
 }))
 const versionEnableForm = computed(() => ({
@@ -152,7 +164,7 @@ const fetchVersionInfo = async () => {
     versionInfo.value = response.data
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    formError.value = `(${error.code}) ${error.name}: ${error.message}`
+    formError.value = error
   }
 }
 
