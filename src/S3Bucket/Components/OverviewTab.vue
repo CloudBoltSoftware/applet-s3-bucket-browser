@@ -59,6 +59,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { findLastActiveVersion } from '../../helpers/commonHelpers';
 import { useBuckets } from '../../helpers/useBuckets';
 import CopyText from './CopyText.vue';
 /**
@@ -132,27 +133,25 @@ const props = defineProps({
   }
 })
 const { bucketLocation } = useBuckets()
-const existVersion = computed(() =>
-  props.versions?.find((version) => version.is_delete_marker === false)
-)
+const lastActive = computed(() => findLastActiveVersion(props.versions))
 
 const versionETag = computed(() =>
   props.hasVersions
-    ? existVersion.value.e_tag.replace(/&quot;/g, '')
+    ? lastActive.value.e_tag.replace(/&quot;/g, '')
     : props.eTag
     ? props.eTag.replace(/&quot;/g, '')
     : ''
 )
 const versionObjectUrl = computed(() =>
   props.hasVersions && props.isDeleteMarker
-    ? `${existVersion.value.object_url}?versionId=${existVersion.value.version_id}`
+    ? `${lastActive.value.object_url}?versionId=${lastActive.value.version_id}`
     : props.objectUrl
 )
 const versionSize = computed(() =>
-  props.hasVersions ? existVersion.value.size : props.size
+  props.hasVersions ? lastActive.value.size : props.size
 )
 const versionOwner = computed(() =>
-  props.hasVersions ? existVersion.value.owner_name : props.ownerName
+  props.hasVersions ? lastActive.value.owner_name : props.ownerName
 )
 </script>
 <style scoped></style>

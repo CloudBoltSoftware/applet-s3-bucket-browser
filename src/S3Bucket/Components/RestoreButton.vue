@@ -2,7 +2,7 @@
   <ErrorIcon :error="restoreError" />
   <VBtn
     icon="mdi-file-undo"
-    title="Restore File"
+    :title="isActiveVersion ? 'Restore Latest Version' : 'Restore File'"
     :disabled="isDeleted"
     @click="restoreItem"
   />
@@ -19,9 +19,9 @@ import ErrorIcon from './ErrorIcon.vue';
  * @property {String} Props.path - The file item path
  * @property {Boolean} Props.isDeleteMarker - Boolean if the item is deleted
  * @property {String} Props.versionId - The version id for the Bucket item
+ * @property {Boolean} Props.isActiveVersion - Boolean if the version id and delete marker are from the last active version
  */
 /** @type {Props} */
-
 const props = defineProps({
   itemKey: {
     type: String,
@@ -38,6 +38,10 @@ const props = defineProps({
   versionId: {
     type: String,
     default: ''
+  },
+  isActiveVersion: {
+    type: Boolean,
+    default: false
   }
 })
 

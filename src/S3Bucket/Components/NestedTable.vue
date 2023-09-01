@@ -25,9 +25,12 @@
     <template #[`item.last_modified`]="{ item }">
       {{ item.raw.is_file ? parseDate(item.raw) : '' }}
     </template>
-    <template #[`item.size`]="{ item }">
+    <template #[`item.actual_size`]="{ item }">
+      {{ parseSize(item.raw.actual_size) }}
+    </template>
+    <template #[`item.storage_class`]="{ item }">
       <span :class="item.raw.is_delete_marker ? 'font-weight-thin' : ''">{{
-        item.raw.is_delete_marker ? 'Deleted' : item.raw.size
+        item.raw.is_delete_marker ? 'Deleted' : item.raw.storage_class
       }}</span>
     </template>
     <template #[`item.actions`]="{ item }">
@@ -44,7 +47,13 @@
             v-if="isVersionMode"
             :item-key="item.raw.key"
             :path="item.raw.path"
-            :version-id="item.raw.version_id"
+            :version-id="findLastActiveVersion(item.raw.versions)?.version_id"
+            :is-delete-marker="
+              findLastActiveVersion(item.raw.versions)?.is_delete_marker
+            "
+            :is-active-version="
+              Boolean(findLastActiveVersion(item.raw.versions))
+            "
           />
           <RenameModal
             :name="item.raw.name"
@@ -62,7 +71,7 @@
       />
     </template>
     <template #expanded-row="{ item }">
-      <tr v-for="(entry, idx) in item.raw?.versions" :key="idx">
+      <tr v-for="(entry, idx) in item.raw?.versions" :key="idx" class="expanded">
         <td></td>
         <td>
           <VIcon icon="mdi-alpha-l" class="ml-1 mt-n1" />
@@ -87,6 +96,7 @@
               :item-key="entry.key"
               :path="entry.path"
               :version-id="entry.version_id"
+              :is-delete-marker="entry.is_delete_marker"
             />
           </VBtnGroup>
         </td>
@@ -98,6 +108,12 @@
 
 <script setup>
 import { ref } from 'vue'
+import {
+downloadFile,
+findLastActiveVersion,
+parseDate,
+parseSize
+} from '../../helpers/commonHelpers'
 import { useBuckets } from '../../helpers/useBuckets'
 import OverviewModal from '../Modals/OverviewModal.vue'
 import RenameModal from '../Modals/RenameModal.vue'
@@ -134,7 +150,7 @@ const headers = [
   { title: 'Name', align: 'start', key: 'name' },
   { title: 'Type', align: 'end', key: 'item_type' },
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
-  { title: 'Size', align: 'end', key: 'size' },
+  { title: 'Size', align: 'end', key: 'actual_size' },
   { title: 'Storage Class', align: 'end', key: 'storage_class' },
   { title: 'Actions', align: 'center', key: 'actions', sortable: false }
 ]
@@ -142,24 +158,14 @@ const versionHeaders = [
   { title: 'Name', align: 'start', key: 'name' },
   { title: 'Type', align: 'start', key: 'item_type' },
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
-  { title: 'Size', align: 'start', key: 'size' },
+  { title: 'Size', align: 'start', key: 'actual_size' },
   { title: 'Storage Class', align: 'start', key: 'storage_class' },
   { title: 'Actions', align: 'start', key: 'actions', sortable: false },
   { title: '', align: 'center', key: 'data-table-expand', sortable: false }
 ]
-
-const parseDate = (entry) => {
-  // Converting from database UTC values to local string
-  const modifiedDate = new Date(entry.last_modified).toDateString()
-  const modifiedTime = new Date(entry.last_modified).toLocaleTimeString('en-US')
-
-  return `${modifiedDate}  ${modifiedTime}`
-}
-
-const downloadFile = (url) => {
-  // TODO Better Decoding needed
-  const adjustedUrl = url.replace(/&amp;/g, '&')
-  window.open(adjustedUrl, '_blank')
-}
 </script>
-<style scoped></style>
+<style scoped>
+/* blue-grey-lighten-5 #ECEFF1 */
+.expanded td {
+  background-color: #ECEFF1 !important
+}</style>

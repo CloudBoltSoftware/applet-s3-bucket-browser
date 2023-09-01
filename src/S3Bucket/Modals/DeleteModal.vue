@@ -1,5 +1,5 @@
 <template>
-  <VDialog v-model="deleteDialog" width="1200">
+  <VDialog v-model="deleteDialog" width="1024">
     <template #activator="{ props: deleteProps }">
       <VBtn
         v-bind="deleteProps"

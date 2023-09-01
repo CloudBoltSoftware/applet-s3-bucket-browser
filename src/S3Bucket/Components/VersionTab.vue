@@ -59,7 +59,7 @@
       </template>
       <template #[`item.actions`]="{ item }">
         <ErrorIcon size="large" :error="formError" />
-        <VBtnGroup>
+        <VBtnGroup variant="text">
           <VBtn
             icon="mdi-file-download"
             title="Download"
@@ -67,9 +67,10 @@
             @click="() => downloadFile(item.raw.download_url)"
           />
           <RestoreButton
-            :item-key="item.raw.key"
-            :path="item.raw.path"
+            :item-key="itemKey"
+            :path="bucketPath"
             :version-id="item.raw.version_id"
+            :is-delete-marker="item.raw.is_delete_marker"
           />
         </VBtnGroup>
       </template>
@@ -80,6 +81,7 @@
 <script setup>
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { downloadFile, parseDate } from '../../helpers/commonHelpers'
 import { useBuckets } from '../../helpers/useBuckets'
 import ErrorIcon from './ErrorIcon.vue'
 import RestoreButton from './RestoreButton.vue'
@@ -122,7 +124,7 @@ const props = defineProps({
   }
 })
 const api = inject('api')
-const { bucketResource } = useBuckets()
+const { bucketResource, bucketPath } = useBuckets()
 const isLoading = ref(false)
 const formError = ref()
 const versionInfo = ref(true)
@@ -138,13 +140,6 @@ const versionForm = computed(() => ({
 const versionEnableForm = computed(() => ({
   bucket_name: encodeURIComponent(bucketResource.value.name)
 }))
-const parseDate = (entry) => {
-  // Converting from database UTC values to local string
-  const modifiedDate = new Date(entry.last_modified).toDateString()
-  const modifiedTime = new Date(entry.last_modified).toLocaleTimeString()
-
-  return `${modifiedDate}  ${modifiedTime}`
-}
 
 const versionHeaders = [
   { title: 'Name', align: 'start', key: 'name' },
@@ -167,7 +162,7 @@ const fetchVersionInfo = async () => {
     versionInfo.value = response.data?.status
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    formError.value = `(${error.code}) ${error.name}: ${error.message}`
+    formError.value = error
   }
 }
 
@@ -183,12 +178,6 @@ const enableVersioning = async () => {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
     formError.value = error
   }
-}
-
-const downloadFile = (url) => {
-  // TODO Better Decoding needed
-  const adjustedUrl = url.replace(/&amp;/g, '&')
-  window.open(adjustedUrl, '_blank')
 }
 
 onMounted(fetchVersionInfo)

@@ -97,7 +97,7 @@ const requiredRule = [(value) => value.length > 0 || 'This field is required']
 const onCancel = () => {
   emit('closeDialog')
   folderDialog.value = false
-  formError.value = ''
+  formError.value = undefined
   uploadFolder.value = []
 }
 

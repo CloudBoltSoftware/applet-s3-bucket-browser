@@ -31,9 +31,8 @@ const downloadError = ref()
 
 // Disabled download if there are no items, or folder items
 const isDisabled = computed(
-  () =>
-    props.selectedItems.length === 0 ||
-    props.selectedItems.every((entry) => entry.is_file)
+  () => props.selectedItems.length === 0 ||
+    !props.selectedItems.every((entry) => entry.is_file)
 )
 
 const filePaths = computed(() =>
