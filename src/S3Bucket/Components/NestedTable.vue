@@ -29,6 +29,9 @@
     <template #[`item.last_modified`]="{ item }">
       {{ item.raw.is_file ? parseDate(item.raw) : '' }}
     </template>
+    <template #[`item.actual_size`]="{ item }">
+      {{ item.raw.size }}
+    </template>
     <template #[`item.actions`]="{ item }">
       <td v-if="item.raw.is_file" class="d-inline-flex">
         <VBtnGroup variant="text">
@@ -128,7 +131,7 @@ const headers = [
   { title: 'Name', align: 'start', key: 'name' },
   { title: 'Type', align: 'end', key: 'item_type' },
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
-  { title: 'Size', align: 'end', key: 'size' },
+  { title: 'Size', align: 'end', key: 'actual_size' },
   { title: 'Storage Class', align: 'end', key: 'storage_class' },
   { title: 'Actions', align: 'center', key: 'actions', sortable: false }
 ]
@@ -136,7 +139,7 @@ const versionHeaders = [
   { title: 'Name', align: 'start', key: 'name' },
   { title: 'Type', align: 'start', key: 'item_type' },
   { title: 'Last Modified', align: 'start', key: 'last_modified' },
-  { title: 'Size', align: 'start', key: 'size' },
+  { title: 'Size', align: 'start', key: 'actual_size' },
   { title: 'Storage Class', align: 'start', key: 'storage_class' },
   { title: 'Actions', align: 'start', key: 'actions', sortable: false },
   { title: '', align: 'center', key: 'data-table-expand', sortable: false }

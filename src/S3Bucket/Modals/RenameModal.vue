@@ -13,7 +13,7 @@
         @update:model-value="(val) => (formIsValid = val)"
       >
         <VCardTitle class="w-100 d-inline-flex justify-space-between text-h5">
-          Rename Object
+          Rename File
           <VBtn
             icon="mdi-close"
             title="Close this dialog"
@@ -24,7 +24,7 @@
         <VCardText>
           <VTextField
             v-model="renameNew"
-            label="New Object Name"
+            label="New File Name"
             placeholder="Enter name here"
             type="text"
             :rules="requiredRule"
@@ -89,7 +89,7 @@ const props = defineProps({
 })
 
 const api = inject('api')
-const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
+const { bucketPath, bucketResource, refreshResource, isFlat } = useBuckets(api)
 const isSubmitting = ref(false)
 const renameDialog = ref(false)
 const formIsValid = ref(false)
@@ -118,7 +118,14 @@ const onCancel = () => {
 watch(
   () => renameDialog.value === true,
   () => {
-    ;(renameOld.value = props?.name), (renameNew.value = props?.name)
+    if (isFlat.value) {
+      const fileName = props.name.split('/').slice(-1)
+      renameOld.value = fileName
+      renameNew.value = fileName
+    } else {
+      renameOld.value = props.name
+      renameNew.value = props.name
+    }
   }
 )
 
