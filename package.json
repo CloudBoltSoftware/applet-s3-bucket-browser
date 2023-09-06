@@ -1,10 +1,10 @@
 {
-  "name": "cui-s3-bucket-manager-applet",
+  "name": "applet-s3-bucket-browser",
   "xuiConfig": {
-    "name": "cui-s3-bucket-manager-applet",
+    "name": "applet-s3-bucket-browser",
     "id": "APL-00000001",
     "icon": "xui/src/Icons_Storage_S3.png",
-    "met_description": "S3 Bucket Browser extending the CloudBolt CUI",
+    "met_description": "S3 Bucket Browser Applet extending the CloudBolt CUI",
     "met_label": "S3 Bucket Browser Applet",
     "met_is_applet": true,
     "met_entry_point": "static/main.es.js",
