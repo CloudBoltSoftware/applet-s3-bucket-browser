@@ -26,7 +26,7 @@
       {{ item.raw.is_file ? parseDate(item.raw) : '' }}
     </template>
     <template #[`item.actual_size`]="{ item }">
-      {{ parseSize(item.raw.actual_size) }}
+      {{ item.raw.size }}
     </template>
     <template #[`item.storage_class`]="{ item }">
       <span :class="item.raw.is_delete_marker ? 'font-weight-thin' : ''">{{
@@ -71,7 +71,11 @@
       />
     </template>
     <template #expanded-row="{ item }">
-      <tr v-for="(entry, idx) in item.raw?.versions" :key="idx" class="expanded">
+      <tr
+        v-for="(entry, idx) in item.raw?.versions"
+        :key="idx"
+        class="expanded"
+      >
         <td></td>
         <td>
           <VIcon icon="mdi-alpha-l" class="ml-1 mt-n1" />
@@ -109,10 +113,9 @@
 <script setup>
 import { ref } from 'vue'
 import {
-downloadFile,
-findLastActiveVersion,
-parseDate,
-parseSize
+  downloadFile,
+  findLastActiveVersion,
+  parseDate
 } from '../../helpers/commonHelpers'
 import { useBuckets } from '../../helpers/useBuckets'
 import OverviewModal from '../Modals/OverviewModal.vue'
@@ -167,5 +170,6 @@ const versionHeaders = [
 <style scoped>
 /* blue-grey-lighten-5 #ECEFF1 */
 .expanded td {
-  background-color: #ECEFF1 !important
-}</style>
+  background-color: #eceff1 !important;
+}
+</style>

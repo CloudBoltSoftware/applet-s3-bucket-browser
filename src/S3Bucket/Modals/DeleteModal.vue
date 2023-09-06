@@ -1,5 +1,9 @@
 <template>
-  <VDialog v-model="deleteDialog" width="1024">
+  <VDialog
+    v-model="deleteDialog"
+    width="1024"
+    @update:model-value="(val) => !val && onCancel()"
+  >
     <template #activator="{ props: deleteProps }">
       <VBtn
         v-bind="deleteProps"
@@ -18,7 +22,7 @@
             title="Close this dialog"
             data-dismiss="modal"
             variant="text"
-            @click="deleteDialog = false"
+            @click="onCancel"
           />
         </VCardTitle>
         <VCardText class="py-0 ml-3">
@@ -49,7 +53,7 @@
             variant="flat"
             size="large"
             class="px-4 mx-2"
-            @click="deleteDialog = false"
+            @click="onCancel"
             >Cancel</VBtn
           >
           <VBtn
@@ -120,6 +124,11 @@ const deleteForm = computed(() => ({
   })
 }))
 
+const onCancel = () => {
+  deleteDialog.value = false
+  formError.value = ''
+}
+
 async function deleteModal() {
   try {
     isDeleting.value = true
@@ -139,7 +148,6 @@ async function deleteModal() {
     // In this case, we'll just log the error to the console.
     formError.value = `(${error.code}) ${error.name}: ${error.message}`
     isDeleting.value = false
-    deleteDialog.value = false
   }
 }
 </script>

@@ -68,6 +68,7 @@ import CopyText from './CopyText.vue';
  * @property {String} Props.lastModified  - The last modified date of the item
  * @property {String} Props.size - The size as a string with a label
  * @property {String} Props.itemType - The item file type
+ * @property {Boolean} Props.isDeleteMarker - Boolean for if the item version has been deleted
  * @property {String} Props.name - The name of the item
  * @property {String} Props.itemKey - The key for the item
  * @property {String} Props.uri - The aws s3 uri https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3URI.html

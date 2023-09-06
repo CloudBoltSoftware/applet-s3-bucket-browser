@@ -83,6 +83,7 @@ import ErrorIcon from './ErrorIcon.vue';
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
 const emit = defineEmits(['closeDialog'])
+
 const isUploading = ref(false)
 const uploadFolder = ref()
 const uploadFolderForm = ref({

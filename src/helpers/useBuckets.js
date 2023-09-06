@@ -15,12 +15,14 @@ const currentPathForm = computed(() => {
   if (currentPath) {
     return {
       path: currentPath.path,
-      name: currentPath.name
+      name: currentPath.name,
+      flat: isFlat.value ? 'True' : 'False'
     }
   }
   return {
     path: '',
-    name: ''
+    name: '',
+    flat: isFlat.value ? 'True' : 'False'
   }
 })
 

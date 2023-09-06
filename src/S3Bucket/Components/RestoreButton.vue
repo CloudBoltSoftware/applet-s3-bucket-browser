@@ -15,19 +15,14 @@ import { useBuckets } from '../../helpers/useBuckets';
 import ErrorIcon from './ErrorIcon.vue';
 /**
  * @typedef {Object} Props
- * @property {String} Props.itemKey - The file item key
- * @property {String} Props.path - The file item path
- * @property {Boolean} Props.isDeleteMarker - Boolean if the item is deleted
- * @property {String} Props.versionId - The version id for the Bucket item
+ * @property {String} Props.itemKey - The original file item key
+ * @property {Boolean} Props.isDeleteMarker - Boolean if the version is deleted
+ * @property {String} Props.versionId - The version id for a version of the item
  * @property {Boolean} Props.isActiveVersion - Boolean if the version id and delete marker are from the last active version
  */
 /** @type {Props} */
 const props = defineProps({
   itemKey: {
-    type: String,
-    default: ''
-  },
-  path: {
     type: String,
     default: ''
   },

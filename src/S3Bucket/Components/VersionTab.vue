@@ -124,7 +124,7 @@ const props = defineProps({
   }
 })
 const api = inject('api')
-const { bucketResource, bucketPath } = useBuckets()
+const { bucketResource, bucketLocation, bucketPath } = useBuckets()
 const isLoading = ref(false)
 const formError = ref()
 const versionInfo = ref(true)
@@ -135,7 +135,8 @@ const adjustedETag = computed(() =>
 )
 const versionForm = computed(() => ({
   e_tag: encodeURIComponent(adjustedETag.value),
-  key: encodeURIComponent(props.itemKey)
+  key: encodeURIComponent(props.itemKey),
+  location: encodeURIComponent(bucketLocation.value)
 }))
 const versionEnableForm = computed(() => ({
   bucket_name: encodeURIComponent(bucketResource.value.name)

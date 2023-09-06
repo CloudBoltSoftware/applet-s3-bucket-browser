@@ -13,7 +13,7 @@
     "met_required_ui_extensions": [
       {
         "name": "cui",
-        "minimum_version": "2023.3.58",
+        "minimum_version": "2023.3.65",
         "maximum_version": ""
       },
       {
