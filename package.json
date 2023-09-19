@@ -9,7 +9,7 @@
     "met_is_applet": true,
     "met_entry_point": "static/main.es.js",
     "met_maximum_version_required": "",
-    "met_minimum_version_required": "2023.4.1",
+    "met_minimum_version_required": "2023.5.1",
     "met_required_ui_extensions": [
       {
         "name": "cui",
