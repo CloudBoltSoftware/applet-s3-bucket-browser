@@ -32,7 +32,11 @@
             disabled
             label="Selected Files"
             class="showInput"
-          />
+          >
+            <template #selection="{ fileNames }">
+              <MultiFileChips :file-names="fileNames" />
+            </template>
+          </VFileInput>
         </VCardText>
         <VCardActions class="d-flex justify-end px-3 mb-1">
           <VTooltip location="start" :text="formError">
@@ -78,6 +82,7 @@ import { computed, inject, onUpdated, ref } from 'vue';
 import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
 import { useBuckets } from '../../helpers/useBuckets';
 import { useDrop } from '../../helpers/useDrop';
+import MultiFileChips from '../Components/MultiFileChips.vue';
 
 const api = inject('api')
 const { bucketResource, refreshResource } = useBuckets(api)

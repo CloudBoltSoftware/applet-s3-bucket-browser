@@ -33,7 +33,7 @@ const props = defineProps({
 })
 
 const errorMessage = computed(
-  () => `(${props.error.code}) ${props.error.name}: ${props.error.message}`
+  () => props.error ? `(${props.error.code}) ${props.error.name}: ${props.error.message}` : undefined
 )
 </script>
 <style scoped></style>
