@@ -58,7 +58,7 @@
           >
           <VBtn
             :loading="isDeleting"
-            width="isDeleting ? '175' : '150"
+            :width="isDeleting ? '175' : '150'"
             prepend-icon="mdi-delete"
             variant="flat"
             color="primary"

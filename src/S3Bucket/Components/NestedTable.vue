@@ -64,15 +64,14 @@
           <RestoreButton
             v-if="isVersionMode"
             :item-key="rawItemData(row).key"
-            :path="rawItemData(row).path"
             :version-id="
-              findLastActiveVersion(rawItemData(row).versions)?.version_id
+              findLastValidVersion(rawItemData(row).versions)?.version_id
             "
             :is-delete-marker="
-              findLastActiveVersion(rawItemData(row).versions)?.is_delete_marker
+              findLastValidVersion(rawItemData(row).versions)?.is_delete_marker
             "
-            :is-active-version="
-              Boolean(findLastActiveVersion(rawItemData(row).versions))
+            :button-show-id="
+              !findLastValidVersion(rawItemData(row).versions)?.is_latest
             "
           />
           <RenameModal
@@ -105,7 +104,7 @@
         <td>{{ rawItemData(row).item_type }}</td>
         <td>{{ parseDate(entry) }}</td>
         <td :class="entry.is_delete_marker ? 'font-weight-thin' : ''">
-          {{ entry.size }}
+          {{ entry.is_delete_marker ? 'Delete Marker' : entry.size }}
         </td>
         <td>{{ entry.storage_class }}</td>
         <td>
@@ -118,10 +117,8 @@
             />
             <RestoreButton
               :item-key="entry.key"
-              :path="entry.path"
               :version-id="entry.version_id"
               :is-delete-marker="entry.is_delete_marker"
-              :is-active-version="entry.is_latest"
             />
           </VBtnGroup>
         </td>
@@ -135,6 +132,7 @@
 import {
   downloadFile,
   findLastActiveVersion,
+  findLastValidVersion,
   parseDate,
   rawItemData
 } from '../../helpers/commonHelpers'
@@ -143,7 +141,8 @@ export default {
   rawItemData,
   downloadFile,
   parseDate,
-  findLastActiveVersion
+  findLastActiveVersion,
+  findLastValidVersion
 }
 </script>
 <script setup>

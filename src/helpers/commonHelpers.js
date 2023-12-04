@@ -9,6 +9,9 @@ export const parseDate = (entry) => {
 export const findLastActiveVersion = (versions) =>
   versions.find((version) => version.is_latest)
 
+export const findLastValidVersion = (versions) =>
+  versions.find((version) => !version.is_delete_marker)
+
 export const downloadFile = (url) => {
   const adjustedUrl = url.replace(/&amp;/g, '&')
   window.open(adjustedUrl, '_blank')

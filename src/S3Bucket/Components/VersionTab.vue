@@ -70,7 +70,6 @@
           />
           <RestoreButton
             :item-key="name"
-            :path="rawItemData(row).path"
             :version-id="rawItemData(row).version_id"
             :is-delete-marker="rawItemData(row).is_delete_marker"
           />
