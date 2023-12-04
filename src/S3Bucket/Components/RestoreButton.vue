@@ -3,16 +3,16 @@
   <VBtn
     icon="mdi-file-undo"
     :title="isActiveVersion ? 'Restore Latest Version' : 'Restore File'"
-    :disabled="isDeleted"
+    :disabled="isDisabled"
     @click="restoreItem"
   />
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
-import ErrorIcon from './ErrorIcon.vue';
+import { computed, inject, ref } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
+import ErrorIcon from './ErrorIcon.vue'
 /**
  * @typedef {Object} Props
  * @property {String} Props.itemKey - The original file item key
@@ -41,24 +41,20 @@ const props = defineProps({
 })
 
 const api = inject('api')
-const { bucketResource, bucketPath, refreshResource, isFlat } = useBuckets(api)
+const { bucketResource, refreshResource } = useBuckets(api)
 const restoreError = ref()
-const isDeleted = computed(() => props.isDeleteMarker)
+const isDisabled = computed(() => !props.isDeleteMarker)
 const retoreItemForm = computed(() => ({
+  resource_id: bucketResource.value.id,
   version_id: props.versionId,
-  key: props.itemKey,
-  state: JSON.stringify({
-    full_path: bucketPath.value,
-    flat: isFlat.value
-  }),
-  restore: true
+  key: props.itemKey
 }))
 
 const restoreItem = async () => {
   try {
     const formData = convertObjectToFormData(retoreItemForm.value)
-    await api.base.instance.post(
-      `ajax/s3-promote-version/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/promote_version',
       formData
     )
     refreshResource()

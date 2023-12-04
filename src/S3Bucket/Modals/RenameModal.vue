@@ -64,7 +64,7 @@
             variant="flat"
             color="primary"
             size="large"
-            :width="isSubmitting ? '150' : '100'"
+            :width="isSubmitting ? '175' : '150'"
             class="px-4"
             >Rename
             <template #loader>Submitting…</template>
@@ -76,9 +76,9 @@
 </template>
 
 <script setup>
-import { computed, inject, ref, watch } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject, ref, watch } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
 
 /**
  * @typedef {Object} Props
@@ -107,6 +107,7 @@ const renameOld = ref('')
 const renameNew = ref('')
 
 const renameForm = computed(() => ({
+  resource_id: bucketResource.value.id,
   old_object_name: renameOld.value,
   new_object_name: renameNew.value,
   path: bucketPath.value,
@@ -145,8 +146,8 @@ async function renameObject() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(
-      `ajax/s3-rename-object/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/rename_object',
       formData
     )
     isSubmitting.value = false

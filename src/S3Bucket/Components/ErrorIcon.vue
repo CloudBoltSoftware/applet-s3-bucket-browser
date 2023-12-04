@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 /**
  * @typedef {Object} Props
  * @property {Array} Props.error - Error object passed from api request

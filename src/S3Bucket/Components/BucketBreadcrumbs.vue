@@ -22,8 +22,8 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
 
 const api = inject('api')
 const { bucketResource, bucketState, fetchSelection } = useBuckets(api)
@@ -33,6 +33,7 @@ const breadcrumbs = computed(() => {
       title: bucketResource.value.name,
       disabled: false,
       path: {
+        resource_id: bucketResource.value.id,
         name: bucketResource.value.name,
         path: ''
       }
@@ -45,6 +46,7 @@ const breadcrumbs = computed(() => {
           title: entry.name,
           disabled: false,
           path: {
+            resource_id: bucketResource.value.id,
             name: entry.name,
             path: entry.path
           }

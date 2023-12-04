@@ -14,13 +14,7 @@
           <VTab class="active tab-btn" value="overview" size="x-large"
             >Overview</VTab
           >
-          <VTab
-            v-if="hasVersionMode"
-            class="tab-btn"
-            value="versions"
-            size="x-large"
-            >Versions</VTab
-          >
+          <VTab class="tab-btn" value="versions" size="x-large">Versions</VTab>
         </VTabs>
         <VBtn
           icon="mdi-close"
@@ -54,10 +48,10 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import { useBuckets } from '../../helpers/useBuckets';
-import OverviewTab from '../Components/OverviewTab.vue';
-import VersionTab from '../Components/VersionTab.vue';
+import { computed, ref } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
+import OverviewTab from '../Components/OverviewTab.vue'
+import VersionTab from '../Components/VersionTab.vue'
 
 /**
  * @typedef {Object} Props

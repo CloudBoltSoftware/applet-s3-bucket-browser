@@ -4,7 +4,10 @@
       <VCol cols="6">
         <div class="mb-3">
           <div class="text-medium-emphasis">Owner</div>
-          <p>{{ versionOwner }}</p>
+          <p v-if="!isDeleteMarker">{{ versionOwner }}</p>
+          <p v-else>
+            <span class="font-weight-thin"> Unavailable </span>
+          </p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">AWS Region</div>
@@ -38,11 +41,16 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Entity Tag (ETag)</div>
-          <p><CopyText :text-to-copy="versionETag" />{{ versionETag }}</p>
+          <p v-if="!isDeleteMarker">
+            <CopyText :text-to-copy="versionETag" />{{ versionETag }}
+          </p>
+          <p v-else>
+            <span class="font-weight-thin"> Unavailable </span>
+          </p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Object URL</div>
-          <p>
+          <p v-if="!isDeleteMarker">
             <CopyText :text-to-copy="versionObjectUrl" />
             <a
               target="_blank"
@@ -51,6 +59,9 @@
               >{{ versionObjectUrl }}</a
             >
           </p>
+          <p v-else>
+            <span class="font-weight-thin"> Unavailable </span>
+          </p>
         </div>
       </VCol>
     </VRow>
@@ -58,10 +69,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { findLastActiveVersion } from '../../helpers/commonHelpers';
-import { useBuckets } from '../../helpers/useBuckets';
-import CopyText from './CopyText.vue';
+import { computed } from 'vue'
+import { findLastActiveVersion } from '../../helpers/commonHelpers'
+import { useBuckets } from '../../helpers/useBuckets'
+import CopyText from './CopyText.vue'
 /**
  * @typedef {Object} Props
  * @property {String} Props.ownerName - The owner's name or id
@@ -135,10 +146,9 @@ const props = defineProps({
 })
 const { bucketLocation } = useBuckets()
 const lastActive = computed(() => findLastActiveVersion(props.versions))
-
 const versionETag = computed(() =>
   props.hasVersions
-    ? lastActive.value.e_tag.replace(/&quot;/g, '')
+    ? lastActive.value?.e_tag?.replace(/&quot;/g, '')
     : props.eTag
     ? props.eTag.replace(/&quot;/g, '')
     : ''
@@ -152,7 +162,7 @@ const versionSize = computed(() =>
   props.hasVersions ? lastActive.value.size : props.size
 )
 const versionOwner = computed(() =>
-  props.hasVersions ? lastActive.value.owner_name : props.ownerName
+  props.hasVersions ? lastActive.value?.owner_name : props.ownerName
 )
 </script>
 <style scoped></style>

@@ -3,76 +3,96 @@
   <VDataTable
     v-model:expanded="expanded"
     :headers="isVersionMode ? versionHeaders : headers"
-    :item-value="(item) => item"
+    :item-value="(row) => row"
     :loading="bucketLoading"
     show-select
     :show-expand="isVersionMode ? true : false"
     @update:model-value="(val) => emit('update:items', val)"
   >
-    <template #[`item.name`]="{ item }">
+    <template #[`item.name`]="row">
       <td class="d-inline-flex">
-        <VIcon v-if="item.raw.nested_version" icon="mdi-alpha-l" class="ml-1" />
+        <VIcon
+          v-if="rawItemData(row).nested_version"
+          icon="mdi-alpha-l"
+          class="ml-4"
+        />
         <VIcon
           v-else
-          :icon="item.raw.is_file ? 'mdi-file' : 'mdi-folder'"
+          :icon="
+            rawItemData(row).is_file
+              ? rawItemData(row)?.is_delete_marker
+                ? 'mdi-file-cancel'
+                : 'mdi-file'
+              : 'mdi-folder'
+          "
           color="blue-darken-3"
           class="align-self-center"
         />
-        <FolderButton v-if="!item.raw.is_file" v-bind="item.raw" />
-        <div v-else class="ml-4">{{ item.raw.name }}</div>
+        <FolderButton
+          v-if="!rawItemData(row).is_file"
+          :url="rawItemData(row).url"
+          :name="rawItemData(row).name"
+          :is-deleted="rawItemData(row).is_delete_marker"
+        />
+        <div v-else class="ml-4">{{ rawItemData(row).name }}</div>
       </td>
     </template>
-    <template #[`item.last_modified`]="{ item }">
-      {{ item.raw.is_file ? parseDate(item.raw) : '' }}
+    <template #[`item.last_modified`]="row">
+      {{ rawItemData(row).is_file ? parseDate(rawItemData(row)) : '' }}
     </template>
-    <template #[`item.actual_size`]="{ item }">
-      {{ item.raw.size }}
+    <template #[`item.actual_size`]="row">
+      <span
+        :class="rawItemData(row).is_delete_marker ? 'font-weight-thin' : ''"
+        >{{
+          rawItemData(row).is_delete_marker ? 'Deleted' : rawItemData(row).size
+        }}</span
+      >
     </template>
-    <template #[`item.storage_class`]="{ item }">
-      <span :class="item.raw.is_delete_marker ? 'font-weight-thin' : ''">{{
-        item.raw.is_delete_marker ? 'Deleted' : item.raw.storage_class
-      }}</span>
+    <template #[`item.storage_class`]="row">
+      {{ rawItemData(row).storage_class }}
     </template>
-    <template #[`item.actions`]="{ item }">
-      <td v-if="item.raw.is_file" class="d-inline-flex">
+    <template #[`item.actions`]="row">
+      <td v-if="rawItemData(row).is_file" class="d-inline-flex">
         <VBtnGroup variant="text">
           <VBtn
             v-if="isVersionMode"
             icon="mdi-file-download"
             title="Download"
-            :disabled="item.raw.is_delete_marker"
-            @click="downloadFile(item.raw.download_url)"
+            :disabled="rawItemData(row).is_delete_marker"
+            @click="downloadFile(rawItemData(row).download_url)"
           />
           <RestoreButton
             v-if="isVersionMode"
-            :item-key="item.raw.key"
-            :path="item.raw.path"
-            :version-id="findLastActiveVersion(item.raw.versions)?.version_id"
+            :item-key="rawItemData(row).key"
+            :path="rawItemData(row).path"
+            :version-id="
+              findLastActiveVersion(rawItemData(row).versions)?.version_id
+            "
             :is-delete-marker="
-              findLastActiveVersion(item.raw.versions)?.is_delete_marker
+              findLastActiveVersion(rawItemData(row).versions)?.is_delete_marker
             "
             :is-active-version="
-              Boolean(findLastActiveVersion(item.raw.versions))
+              Boolean(findLastActiveVersion(rawItemData(row).versions))
             "
           />
           <RenameModal
-            :name="item.raw.name"
-            :is-deleted="item.raw.is_delete_marker"
+            :name="rawItemData(row).name"
+            :is-deleted="rawItemData(row).is_delete_marker"
           />
-          <OverviewModal :source-item="item.raw" />
+          <OverviewModal :source-item="rawItemData(row)" />
         </VBtnGroup>
       </td>
     </template>
-    <template #[`item.data-table-expand`]="{ item, isExpanded, toggleExpand }">
+    <template #[`item.data-table-expand`]="row">
       <VIcon
-        v-if="item.raw.is_file"
-        :icon="isExpanded ? 'mdi-menu-down' : 'mdi-menu-up'"
-        @click="toggleExpand(item)"
+        v-if="rawItemData(row).is_file"
+        :icon="row.isExpanded ? 'mdi-menu-down' : 'mdi-menu-up'"
+        @click="row.toggleExpand(row.item)"
       />
     </template>
-    <template #expanded-row="{ item }">
+    <template #expanded-row="row">
       <tr
-        v-for="(entry, idx) in item.raw?.versions"
+        v-for="(entry, idx) in rawItemData(row)?.versions"
         :key="idx"
         class="expanded"
       >
@@ -82,7 +102,7 @@
           <span class="mx-2">{{ entry.version_id }}</span
           ><span class="ml-2 text-disabled">Version Id</span>
         </td>
-        <td>{{ item.raw.item_type }}</td>
+        <td>{{ rawItemData(row).item_type }}</td>
         <td>{{ parseDate(entry) }}</td>
         <td :class="entry.is_delete_marker ? 'font-weight-thin' : ''">
           {{ entry.size }}
@@ -101,6 +121,7 @@
               :path="entry.path"
               :version-id="entry.version_id"
               :is-delete-marker="entry.is_delete_marker"
+              :is-active-version="entry.is_latest"
             />
           </VBtnGroup>
         </td>
@@ -110,13 +131,23 @@
   </VDataTable>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
 import {
   downloadFile,
   findLastActiveVersion,
-  parseDate
+  parseDate,
+  rawItemData
 } from '../../helpers/commonHelpers'
+
+export default {
+  rawItemData,
+  downloadFile,
+  parseDate,
+  findLastActiveVersion
+}
+</script>
+<script setup>
+import { ref } from 'vue'
 import { useBuckets } from '../../helpers/useBuckets'
 import OverviewModal from '../Modals/OverviewModal.vue'
 import RenameModal from '../Modals/RenameModal.vue'

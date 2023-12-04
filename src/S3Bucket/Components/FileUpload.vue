@@ -73,10 +73,10 @@
 </template>
 
 <script setup>
-import { inject, ref } from 'vue';
-import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
-import ErrorIcon from './ErrorIcon.vue';
+import { inject, ref } from 'vue'
+import { convertObjectToMultiFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
+import ErrorIcon from './ErrorIcon.vue'
 
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
@@ -85,6 +85,7 @@ const isUploading = ref(false)
 const uploadFile = ref([])
 const uploadFileForm = ref({
   bucket_name: bucketResource.value.name,
+  resource_id: bucketResource.value.id,
   path: bucketPath.value
 })
 const formIsValid = ref(false)
@@ -110,8 +111,8 @@ async function fileUploadModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(
-      `ajax/s3-upload-new-object/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/upload_object',
       formData
     )
     emit('closeDialog')

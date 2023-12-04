@@ -6,53 +6,53 @@ module.exports = {
   // This tells eslint which global variables and features are available.
   env: {
     browser: true,
-    node: true,
+    node: true
   },
 
   // These are sets of linting rules to use by default.
   extends: [
     // This plugin checks for common vue errors in your code.
-    "plugin:vue/recommended",
+    'plugin:vue/recommended',
 
     // This plugin checks for common js errors in your code.
-    "eslint:recommended",
+    'eslint:recommended',
 
     // This plugin keeps linting from clashing with prettier formatting.
-    "prettier",
+    'prettier',
 
     // This plugin checks for accessibility issues in your code.
-    "plugin:vuejs-accessibility/recommended",
+    'plugin:vuejs-accessibility/recommended',
 
     // This plugin helps your styles from leaking outside of your components.
-    "plugin:vue-scoped-css/vue3-recommended",
+    'plugin:vue-scoped-css/vue3-recommended'
   ],
 
   parserOptions: {
     // CloudBolt targets modern browsers. A late ecmaVersion leads
     // to less transpilation, faster builds, and smaller bundles.
-    ecmaVersion: 2020,
+    ecmaVersion: 2020
   },
 
   // This is where you can add, remove, or change individual linting rules.
   rules: {
     // Allows some HTML tags to be self-closing
-    "vue/html-self-closing": [
-      "error",
+    'vue/html-self-closing': [
+      'error',
       {
         html: {
-          void: "any",
-          normal: "any",
-          component: "any",
+          void: 'any',
+          normal: 'any',
+          component: 'any'
         },
-        svg: "never",
-        math: "never",
-      },
+        svg: 'never',
+        math: 'never'
+      }
     ],
 
     // Allows for vuetify syntax with v-slot modifiers
-    "vue/valid-v-slot": ["error", { allowModifiers: true }],
+    'vue/valid-v-slot': ['error', { allowModifiers: true }],
 
     // Allows for multiple root elements in a component
-    "vue/no-multiple-template-root": "off",
-  },
-};
+    'vue/no-multiple-template-root': 'off'
+  }
+}

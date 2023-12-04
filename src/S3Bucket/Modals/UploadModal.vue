@@ -33,10 +33,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useBuckets } from '../../helpers/useBuckets';
-import FileUpload from '../Components/FileUpload.vue';
-import FolderUpload from '../Components/FolderUpload.vue';
+import { ref } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
+import FileUpload from '../Components/FileUpload.vue'
+import FolderUpload from '../Components/FolderUpload.vue'
 
 const { bucketPath } = useBuckets()
 const uploadDialog = ref(false)

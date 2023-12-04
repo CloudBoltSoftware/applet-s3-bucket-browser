@@ -78,7 +78,7 @@
           <VBtn
             :loading="isSubmitting"
             :disabled="!formIsValid"
-            :width="isSubmitting ? '150' : '100'"
+            :width="isSubmitting ? '175' : '150'"
             prepend-icon="mdi-folder-plus"
             type="submit"
             variant="flat"
@@ -95,15 +95,16 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject, ref } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
 
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
 
 const newFolder = ref('')
 const createFolderForm = computed(() => ({
+  resource_id: bucketResource.value.id,
   folder_name: newFolder.value,
   path: bucketPath.value,
   bucket_name: bucketResource.value.name
@@ -131,8 +132,8 @@ async function submitCreateModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(
-      `ajax/s3-create-folder/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/create_folder',
       formData
     )
     isSubmitting.value = false

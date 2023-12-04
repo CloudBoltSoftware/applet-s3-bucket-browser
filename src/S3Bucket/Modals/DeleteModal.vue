@@ -58,7 +58,7 @@
           >
           <VBtn
             :loading="isDeleting"
-            :width="isDeleting ? '150' : '100'"
+            width="isDeleting ? '175' : '150"
             prepend-icon="mdi-delete"
             variant="flat"
             color="primary"
@@ -75,9 +75,9 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject, ref } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
 
 /**
  * @typedef {Object} Props
@@ -91,7 +91,7 @@ const props = defineProps({
   }
 })
 const api = inject('api')
-const { bucketResource, bucketPath, isFlat, refreshResource } = useBuckets(api)
+const { bucketResource, refreshResource } = useBuckets(api)
 const formError = ref()
 const deleteDialog = ref(false)
 const isDeleting = ref(false)
@@ -117,11 +117,8 @@ const filePath = computed(() => {
   return allFiles
 })
 const deleteForm = computed(() => ({
-  all_files_path: JSON.stringify(filePath.value),
-  state: JSON.stringify({
-    full_path: bucketPath.value,
-    flat: isFlat.value
-  })
+  resource_id: bucketResource.value.id,
+  all_files_path: JSON.stringify(filePath.value)
 }))
 
 const onCancel = () => {
@@ -136,8 +133,8 @@ async function deleteModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(
-      `ajax/s3-delete-file/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/delete_item',
       formData
     )
     isDeleting.value = false

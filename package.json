@@ -1,29 +1,24 @@
 {
-  "name": "cui-s3-bucket-manager-applet",
+  "name": "s3-bucket-manager-applet",
   "xuiConfig": {
-    "name": "cui-s3-bucket-manager-applet",
-    "id": "APL-00000001",
+    "name": "s3-bucket-manager-applet",
+    "id": "APL-00000002",
     "icon": "xui/src/Icons_Storage_S3.png",
-    "met_description": "S3 Bucket Browser extending the CloudBolt CUI",
+    "met_description": "S3 Bucket Browser extending the CloudBolt SSP and HUI",
     "met_label": "S3 Bucket Browser Applet",
     "met_is_applet": true,
     "met_entry_point": "static/main.es.js",
     "met_maximum_version_required": "",
-    "met_minimum_version_required": "2023.1.1",
+    "met_minimum_version_required": "2023.5.1",
     "met_required_ui_extensions": [
       {
-        "name": "cui",
-        "minimum_version": "2023.3.65",
-        "maximum_version": ""
-      },
-      {
-        "name": "s3_file_manager",
-        "minimum_version": "1.0",
+        "name": "ssp",
+        "minimum_version": "2023.5.1",
         "maximum_version": ""
       }
     ],
     "met_targets": {
-      "cui": {
+      "ssp": {
         "fullPage": [
           {
             "slug": "s3-browser"
@@ -37,10 +32,23 @@
             "label": "S3 Bucket Browser"
           }
         ]
+      },
+      "hui": {
+        "resourceDetailsTabs": [
+          {
+            "resourceTypes": [
+              "s3_bucket"
+            ],
+            "label": "S3 Bucket Browser",
+            "position": [
+              "post-jobs-tab"
+            ]
+          }
+        ]
       }
     }
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "S3 File Manager converted to a CloudBolt applet",
   "type": "module",
   "files": [
