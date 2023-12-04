@@ -54,9 +54,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import OverviewTab from '../Components/OverviewTab.vue';
-import VersionTab from '../Components/VersionTab.vue';
+import { computed, ref } from 'vue'
+import OverviewTab from '../Components/OverviewTab.vue'
+import VersionTab from '../Components/VersionTab.vue'
 /**
  * @typedef {Object} Props
  * @property {Object} Props.sourceItem - The selected S3 Bucket item

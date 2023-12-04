@@ -37,10 +37,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, provide, ref, watch } from 'vue';
-import avatarUrl from '../assets/Icons_Storage_S3.png';
-import { useBuckets } from '../helpers/useBuckets';
-import BucketDisplay from './BucketDisplay.vue';
+import { computed, onMounted, provide, ref, watch } from 'vue'
+import avatarUrl from '../assets/Icons_Storage_S3.png'
+import { useBuckets } from '../helpers/useBuckets'
+import BucketDisplay from './BucketDisplay.vue'
 /**
  * @typedef {Object} Props
  * @property {ReturnType<import("@cloudbolt/js-sdk").createApi>} Props.api - The authenticated API instance

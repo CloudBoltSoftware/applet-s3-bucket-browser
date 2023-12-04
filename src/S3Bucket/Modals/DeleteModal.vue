@@ -75,9 +75,9 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject, ref } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
 
 /**
  * @typedef {Object} Props

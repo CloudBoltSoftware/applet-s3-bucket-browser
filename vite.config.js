@@ -1,9 +1,9 @@
-import vue from "@vitejs/plugin-vue";
-import { defineConfig } from "vite";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
-import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
-import { postBuildScriptRunner } from "./src/plugins/build/postBuildScriptRunner";
-import { chromeDevtoolsOverrides } from "./src/plugins/build/chromeDevToolOverrides";
+import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import { postBuildScriptRunner } from './src/plugins/build/postBuildScriptRunner'
+import { chromeDevtoolsOverrides } from './src/plugins/build/chromeDevToolOverrides'
 
 /**
  * This is the Vite configuration file. It's used to configure the Vite bundler.
@@ -19,8 +19,8 @@ export default defineConfig({
     vue({
       // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#image-loading
       template: {
-        transformAssetUrls,
-      },
+        transformAssetUrls
+      }
     }),
 
     // Add Vuetify Components, directives, etc. This is required for Vuetify to work.
@@ -34,7 +34,7 @@ export default defineConfig({
     chromeDevtoolsOverrides(),
 
     // Runs a script that triggers the custom xui bundler when a build finishes.
-    postBuildScriptRunner({ script: "npm run post-build" }),
+    postBuildScriptRunner({ script: 'npm run post-build' })
   ],
 
   /**
@@ -49,14 +49,14 @@ export default defineConfig({
      */
     lib: {
       // CloudBolt loads Applets as ES Modules - the browser's native module format.
-      formats: ["es"],
+      formats: ['es'],
 
       // The root component the CUI should load.
-      entry: "src/TheApplet.vue",
+      entry: 'src/TheApplet.vue',
 
       // The name of the js bundle the CUI will use to load the component.
       // This should match package.json's "module" field and "xuiConfig.met_entry_point"
-      fileName: "main.es",
+      fileName: 'main.es'
     },
 
     rollupOptions: {
@@ -68,7 +68,7 @@ export default defineConfig({
        * This configuration shouldn't change unless CloudBolt changes the import map
        * to provide more/fewer/different dependencies.
        */
-      external: (id) => /^(vue|vuetify)$/.test(id),
-    },
-  },
-});
+      external: (id) => /^(vue|vuetify)$/.test(id)
+    }
+  }
+})

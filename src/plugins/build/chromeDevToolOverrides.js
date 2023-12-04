@@ -1,6 +1,6 @@
-import { loadEnv } from "vite";
-import load from "load-pkg";
-import fs from "fs/promises";
+import { loadEnv } from 'vite'
+import load from 'load-pkg'
+import fs from 'fs/promises'
 
 /**
  * This plugin copies built applet files to a temporary folder structure for chrome devtools source overrides.
@@ -9,17 +9,17 @@ import fs from "fs/promises";
  * Do not modify or remove this file unless you know what you're doing.
  */
 export function chromeDevtoolsOverrides() {
-  let cbUrl = "";
-  let xuiName = "";
+  let cbUrl = ''
+  let xuiName = ''
 
   return {
-    name: "chrome-devtools-overrides",
+    name: 'chrome-devtools-overrides',
 
     // Only run this plugin when building for development.
     apply: (config, { command }) =>
-      command === "build" && config.mode === "development",
+      command === 'build' && config.mode === 'development',
 
-    enforce: "post",
+    enforce: 'post',
 
     /**
      * Fail fast if there is no VITE_CB_URL set or no xui name.
@@ -27,21 +27,21 @@ export function chromeDevtoolsOverrides() {
      * @param {import('vite').BuildOptions} options
      */
     async options({ mode }) {
-      cbUrl = loadEnv(mode, process.cwd()).VITE_CB_URL;
+      cbUrl = loadEnv(mode, process.cwd()).VITE_CB_URL
       try {
-        new URL(cbUrl);
+        new URL(cbUrl)
       } catch (error) {
         this.error(
           `VITE_CB_URL environment variable is not a valid URL: ${cbUrl}\nAborting. See README.md for more information.`
-        );
+        )
       }
 
-      const packageJson = (await load()) || {};
-      xuiName = packageJson.xuiConfig.name;
+      const packageJson = (await load()) || {}
+      xuiName = packageJson.xuiConfig.name
       if (!xuiName) {
         this.error(
           `Missing xuiConfig.name in package.json. Aborting. See README.md for more information.`
-        );
+        )
       }
     },
 
@@ -51,25 +51,25 @@ export function chromeDevtoolsOverrides() {
      * @param {Object} bundle
      */
     async writeBundle(options, bundle) {
-      const url = new URL(cbUrl);
-      const urlAsPath = `${url.host}${url.pathname}`;
-      const sourceDir = options.dir;
-      const sourceFileNames = Object.keys(bundle);
-      const targetDir = `xui/tmp/devtools/${urlAsPath}/static/uploads/applets/${xuiName}/${xuiName}/static/`;
+      const url = new URL(cbUrl)
+      const urlAsPath = `${url.host}${url.pathname}`
+      const sourceDir = options.dir
+      const sourceFileNames = Object.keys(bundle)
+      const targetDir = `xui/tmp/devtools/${urlAsPath}/static/uploads/applets/${xuiName}/${xuiName}/static/`
 
-      this.info(`Copying applet files from ${sourceDir} to ${targetDir}`);
+      this.info(`Copying applet files from ${sourceDir} to ${targetDir}`)
 
-      await fs.mkdir(targetDir, { recursive: true });
+      await fs.mkdir(targetDir, { recursive: true })
 
       const copyPromises = sourceFileNames.map((fileName) => {
-        const sourceFilePath = `${sourceDir}/${fileName}`;
-        const targetFilePath = `${targetDir}/${fileName}`;
-        return fs.copyFile(sourceFilePath, targetFilePath);
-      });
+        const sourceFilePath = `${sourceDir}/${fileName}`
+        const targetFilePath = `${targetDir}/${fileName}`
+        return fs.copyFile(sourceFilePath, targetFilePath)
+      })
 
-      await Promise.all(copyPromises);
+      await Promise.all(copyPromises)
 
-      this.info(`Copied ${sourceFileNames.length} files`);
-    },
-  };
+      this.info(`Copied ${sourceFileNames.length} files`)
+    }
+  }
 }

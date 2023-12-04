@@ -9,10 +9,10 @@
 </template>
 
 <script setup>
-import { onUnmounted, ref } from "vue";
-import { VProgressCircular } from "vuetify/lib/components/index.mjs";
-import NavbarView from "./NavbarView/NavbarView.vue";
-import S3BucketBrowser from "./S3Bucket/S3BucketBrowser.vue";
+import { onUnmounted, ref } from 'vue'
+import { VProgressCircular } from 'vuetify/lib/components/index.mjs'
+import NavbarView from './NavbarView/NavbarView.vue'
+import S3BucketBrowser from './S3Bucket/S3BucketBrowser.vue'
 
 /**
  * JSDoc is a great way to document your code and help your IDE provide better autocomplete.
@@ -47,61 +47,59 @@ import S3BucketBrowser from "./S3Bucket/S3BucketBrowser.vue";
 defineProps({
   user: {
     type: Object,
-    default: () => ({}),
+    default: () => ({})
   },
   api: {
     type: Object,
-    required: true,
+    required: true
   },
   page: {
     type: String,
-    required: true,
+    required: true
   },
   area: {
     type: String,
-    default: "",
+    default: ''
   },
   theme: {
     type: Object,
-    default: () => ({}),
+    default: () => ({})
   },
   context: {
     type: Object,
-    default: () => ({}),
-  },
-});
+    default: () => ({})
+  }
+})
 
-const emit = defineEmits([
-  "configure",
-]);
+const emit = defineEmits(['configure'])
 /**
  * Example for how to emit the configure event. (uses `ref` - read more about that in MainView.vue)
  * Change shouldRemove to `true` to see it in action.
  */
-const shouldRemove = false;
+const shouldRemove = false
 
 // Set up some variables
-const removed = ref(false);
-const loading = ref(false);
-const delay = 5 * 1000;
-const removeTimeout = ref(null);
+const removed = ref(false)
+const loading = ref(false)
+const delay = 5 * 1000
+const removeTimeout = ref(null)
 
 // See what values are expected for the target/page by emitting it without an argument
 // The result will appear in the page's console.
-emit("configure");
+emit('configure')
 
 // Trigger the remove event after a delay
 if (shouldRemove) {
   // Set up the loading indicator
-  emit("configure", { loadingTab: true });
-  loading.value = true;
+  emit('configure', { loadingTab: true })
+  loading.value = true
 
   removeTimeout.value = setTimeout(() => {
-    console.log(`Removing the applet's tab after a ${delay}ms Delay!`);
-    emit("configure", { loadingTab: false, visibleTab: false });
-    loading.value = false;
-    removed.value = true;
-  }, delay);
+    console.log(`Removing the applet's tab after a ${delay}ms Delay!`)
+    emit('configure', { loadingTab: false, visibleTab: false })
+    loading.value = false
+    removed.value = true
+  }, delay)
 }
-onUnmounted(() => clearTimeout(removeTimeout.value));
+onUnmounted(() => clearTimeout(removeTimeout.value))
 </script>

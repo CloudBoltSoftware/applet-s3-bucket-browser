@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 /**
  * @typedef {Object} Props
  * @property {Array} Props.error - Error object passed from api request
@@ -32,8 +32,10 @@ const props = defineProps({
   }
 })
 
-const errorMessage = computed(
-  () => props.error ? `(${props.error.code}) ${props.error.name}: ${props.error.message}` : undefined
+const errorMessage = computed(() =>
+  props.error
+    ? `(${props.error.code}) ${props.error.name}: ${props.error.message}`
+    : undefined
 )
 </script>
 <style scoped></style>

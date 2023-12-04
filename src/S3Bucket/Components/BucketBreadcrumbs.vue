@@ -22,8 +22,8 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
 
 const api = inject('api')
 const { bucketResource, bucketState, fetchSelection } = useBuckets(api)

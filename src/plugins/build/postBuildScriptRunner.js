@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn } from 'child_process'
 
 /**
  * Run a script after each build. This works on all changes with build --watch too.
@@ -14,21 +14,21 @@ import { spawn } from "child_process";
  */
 export function postBuildScriptRunner(options) {
   return {
-    name: "post-build-plugin",
-    apply: options.apply || "build",
-    enforce: options.enforce || "post",
+    name: 'post-build-plugin',
+    apply: options.apply || 'build',
+    enforce: options.enforce || 'post',
     // By default, run on the writeBundle hook. This is after each build has written
     // its files to disk. This ensures all the `dist` files are available to the script.
-    async [options.hook || "writeBundle"]() {
-      this.info(`Running post build script: "${options.script}"`);
-      const [command, ...args] = options.script.split(" ");
-      const child = spawn(command, args, { stdio: "inherit" });
-      child.on("error", (error) => console.error(error));
-      child.on("close", (code) =>
+    async [options.hook || 'writeBundle']() {
+      this.info(`Running post build script: "${options.script}"`)
+      const [command, ...args] = options.script.split(' ')
+      const child = spawn(command, args, { stdio: 'inherit' })
+      child.on('error', (error) => console.error(error))
+      child.on('close', (code) =>
         this.info(
           `post build script "${options.script}" exited with code ${code}`
         )
-      );
-    },
-  };
+      )
+    }
+  }
 }

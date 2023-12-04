@@ -1,11 +1,6 @@
 <template>
   <template v-for="(fileName, index) in fileNames">
-    <VChip
-      v-if="index < 5"
-      :key="fileName"
-      variant="outlined"
-      class="me-2"
-    >
+    <VChip v-if="index < 5" :key="fileName" variant="outlined" class="me-2">
       {{ fileName }}
     </VChip>
     <span
@@ -17,7 +12,6 @@
     </span>
   </template>
 </template>
-
 
 <script setup>
 /**

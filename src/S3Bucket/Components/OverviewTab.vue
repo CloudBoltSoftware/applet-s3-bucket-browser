@@ -58,9 +58,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useBuckets } from '../../helpers/useBuckets';
-import CopyText from './CopyText.vue';
+import { computed } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
+import CopyText from './CopyText.vue'
 /**
  * @typedef {Object} Props
  * @property {String} Props.ownerName - The owner's name or id
