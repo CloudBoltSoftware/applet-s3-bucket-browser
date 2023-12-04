@@ -95,9 +95,9 @@
 </template>
 
 <script setup>
-import { computed, inject, ref } from 'vue';
-import { convertObjectToFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject, ref } from 'vue'
+import { convertObjectToFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
 
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)

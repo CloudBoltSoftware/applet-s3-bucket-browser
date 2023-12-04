@@ -78,11 +78,11 @@
 </template>
 
 <script setup>
-import { computed, inject, onUpdated, ref } from 'vue';
-import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
-import { useDrop } from '../../helpers/useDrop';
-import MultiFileChips from '../Components/MultiFileChips.vue';
+import { computed, inject, onUpdated, ref } from 'vue'
+import { convertObjectToMultiFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
+import { useDrop } from '../../helpers/useDrop'
+import MultiFileChips from '../Components/MultiFileChips.vue'
 
 const api = inject('api')
 const { bucketResource, refreshResource } = useBuckets(api)

@@ -80,11 +80,11 @@
 </template>
 
 <script setup>
-import { inject, ref } from 'vue';
-import { convertObjectToMultiFormData } from '../../helpers/axiosHelper';
-import { useBuckets } from '../../helpers/useBuckets';
-import ErrorIcon from './ErrorIcon.vue';
-import MultiFileChips from './MultiFileChips.vue';
+import { inject, ref } from 'vue'
+import { convertObjectToMultiFormData } from '../../helpers/axiosHelper'
+import { useBuckets } from '../../helpers/useBuckets'
+import ErrorIcon from './ErrorIcon.vue'
+import MultiFileChips from './MultiFileChips.vue'
 
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)

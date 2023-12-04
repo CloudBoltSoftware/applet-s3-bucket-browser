@@ -22,7 +22,7 @@
  * Accepts text-to-copy prop
  * For eg: <CopyText :text-to-copy="test_value" />
  * */
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
 /**
  * @typedef {Object} Props
  * @property {String} Props.textToCopy - Text to be copied on click

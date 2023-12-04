@@ -12,8 +12,8 @@
 </template>
 
 <script setup>
-import { computed, inject, onUpdated, ref } from 'vue';
-import { useBuckets } from '../../helpers/useBuckets';
+import { computed, inject, onUpdated, ref } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
 /**
  * @typedef {Object} Props
  * @property {Object} Props.url - The current S3 Bucket folder url
