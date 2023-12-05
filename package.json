@@ -1,7 +1,7 @@
 {
-  "name": "s3-bucket-manager-applet",
+  "name": "s3-bucket-browser-applet",
   "xuiConfig": {
-    "name": "s3-bucket-manager-applet",
+    "name": "s3-bucket-browser-applet",
     "id": "APL-00000002",
     "icon": "xui/src/Icons_Storage_S3.png",
     "met_description": "S3 Bucket Browser extending the CloudBolt SSP and HUI",

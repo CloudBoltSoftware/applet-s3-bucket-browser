@@ -40,11 +40,16 @@
           <VFileInput
             v-model="uploadFolder"
             :rules="requiredRule"
+            single-line
             clearable
             multiple
             webkitdirectory
-            label="Upload Folder"
-          />
+            label="Select Upload Folder"
+          >
+            <template #selection="{ fileNames }">
+              <MultiFileChips :file-names="fileNames" />
+            </template>
+          </VFileInput>
         </VCardText>
         <VCardActions class="d-flex justify-end px-3 mb-1">
           <ErrorIcon size="large" :error="formError" />
@@ -79,6 +84,7 @@ import { inject, ref } from 'vue'
 import { convertObjectToMultiFormData } from '../../helpers/axiosHelper'
 import { useBuckets } from '../../helpers/useBuckets'
 import ErrorIcon from './ErrorIcon.vue'
+import MultiFileChips from './MultiFileChips.vue'
 
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)

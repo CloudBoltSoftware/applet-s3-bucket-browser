@@ -38,8 +38,13 @@ export function useBuckets(api = {}) {
       buckets.value = response.bucket_info
       currentError.value = ''
     } catch (error) {
-      // When using API calls, it's a good idea to catch errors and meaningfully display them.
-      currentError.value = `(${error.code}) ${error.name}: ${error.message}`
+      if (error.response.status === 404) {
+        currentError.value =
+          'Endpoint not found. Please confirm you have installed and enabled the UI Extension "S3 File Manager" '
+      } else {
+        // When using API calls, it's a good idea to catch errors and meaningfully display them.
+        currentError.value = `(${error.code}) ${error.name}: ${error.message}`
+      }
     }
   }
 
