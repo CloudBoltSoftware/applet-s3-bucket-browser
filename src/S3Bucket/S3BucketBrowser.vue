@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, provide, ref, watch } from 'vue'
+import { computed, onMounted, provide, watch } from 'vue'
 import avatarUrl from '../assets/Icons_Storage_S3.png'
 import { useBuckets } from '../helpers/useBuckets'
 import BucketDisplay from './BucketDisplay.vue'
@@ -59,7 +59,6 @@ const props = defineProps({
 })
 
 provide('api', props.api)
-const csrfError = ref()
 const {
   getBuckets,
   getResourceSelection,
@@ -74,7 +73,7 @@ const preLoadedResource = computed(
     props.context.resource &&
     buckets.value.find((bucket) => bucket.name === props.context.resource.name)
 )
-const showError = computed(() => csrfError.value || currentError.value)
+const showError = computed(() => currentError.value)
 
 onMounted(getBuckets)
 watch(
