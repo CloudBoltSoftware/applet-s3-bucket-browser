@@ -1,5 +1,5 @@
 <template>
-  <!-- Add `"all": ["preNavItems"]` to the cui targets in package.json to add the direct Navbar link to the full page app -->
+  <!-- Add `"all": ["preNavItems"]` to the ssp targets in package.json to add the direct Navbar link to the full page app -->
   <NavbarView v-if="area.includes('Nav')" />
   <div v-else-if="removed" />
   <VProgressCircular v-else-if="loading" indeterminate class="ma-3" />

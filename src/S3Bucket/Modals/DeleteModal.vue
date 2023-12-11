@@ -58,7 +58,7 @@
           >
           <VBtn
             :loading="isDeleting"
-            :width="isDeleting ? '150' : '100'"
+            :width="isDeleting ? '175' : '150'"
             prepend-icon="mdi-delete"
             variant="flat"
             color="primary"
@@ -117,6 +117,7 @@ const filePath = computed(() => {
   return allFiles
 })
 const deleteForm = computed(() => ({
+  resource_id: bucketResource.value.id,
   all_files_path: JSON.stringify(filePath.value)
 }))
 
@@ -132,8 +133,8 @@ async function deleteModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(
-      `ajax/s3-delete-file/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/delete_item',
       formData
     )
     isDeleting.value = false

@@ -1,5 +1,5 @@
 <template>
-  <VDialog v-model="uploadDialog" width="1024">
+  <VDialog v-model="uploadDialog" width="1200">
     <template #activator="{ props: uploadProps }">
       <VBtn
         v-bind="uploadProps"

@@ -1,7 +1,7 @@
 <template>
   <VDialog
     v-model="fileDialog"
-    width="1024"
+    width="1200"
     @update:model-value="(val) => !val && onCancel()"
   >
     <template #activator="{ props: fileProps }">
@@ -85,6 +85,7 @@ const isUploading = ref(false)
 const uploadFile = ref([])
 const uploadFileForm = ref({
   bucket_name: bucketResource.value.name,
+  resource_id: bucketResource.value.id,
   path: bucketPath.value
 })
 const formIsValid = ref(false)
@@ -95,7 +96,7 @@ const requiredRule = [(value) => value.length > 0 || 'This field is required']
 const onCancel = () => {
   emit('closeDialog')
   fileDialog.value = false
-  formError.value = ''
+  formError.value = undefined
   uploadFile.value = []
 }
 
@@ -110,8 +111,8 @@ async function fileUploadModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(
-      `ajax/s3-upload-new-object/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/upload_object',
       formData
     )
     emit('closeDialog')

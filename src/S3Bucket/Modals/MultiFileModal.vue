@@ -1,7 +1,7 @@
 <template>
   <VDialog
     v-model="fileDialog"
-    width="1024"
+    width="1200"
     @update:model-value="(val) => !val && onCancel()"
   >
     <VCard class="pa-3">
@@ -85,7 +85,7 @@ import { useDrop } from '../../helpers/useDrop'
 import MultiFileChips from '../Components/MultiFileChips.vue'
 
 const api = inject('api')
-const { bucketResource, refreshResource } = useBuckets(api)
+const { refreshResource } = useBuckets(api)
 const { dropModal, dropFiles, dropFilesForm, clearModal } = useDrop(api)
 const isUploading = ref(false)
 const uploadFile = ref([])
@@ -122,8 +122,8 @@ async function multiFileUploadModal() {
       // Because this function is `async`, we can use `await` to wait for the API call to finish.
       // Alternatively, we could use `.then()` and `.catch()` to handle the response.
       // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-      await api.base.instance.post(
-        `ajax/s3-upload-new-object/${bucketResource.value.id}/`,
+      await api.v3.cmp.inboundWebHooks.runPost(
+        's3_bucket_browser/upload_object',
         formData
       )
     }

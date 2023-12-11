@@ -26,7 +26,7 @@ const props = defineProps({
   }
 })
 const api = inject('api')
-const { bucketResource, bucketLocation } = useBuckets()
+const { bucketResource } = useBuckets()
 const downloadError = ref()
 
 // Disabled download if there are no items, or folder items
@@ -38,24 +38,27 @@ const isDisabled = computed(
 
 const filePaths = computed(() =>
   props.selectedItems.map((item) => ({
-    path: item.url,
-    location: bucketLocation.value
+    path: item.url
   }))
 )
 
 async function downloadFiles() {
   filePaths.value.forEach(async (entry) => {
     try {
-      const formData = convertObjectToFormData(entry)
+      const formData = convertObjectToFormData({
+        resource_id: bucketResource.value.id,
+        ...entry
+      })
       // Because this function is `async`, we can use `await` to wait for the API call to finish.
       // Alternatively, we could use `.then()` and `.catch()` to handle the response.
       // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-      const response = await api.base.instance.post(
-        `ajax/s3-download-file/${bucketResource.value.id}/`,
+      const response = await api.v3.cmp.inboundWebHooks.runPost(
+        's3_bucket_browser/download_file',
         formData
       )
       if (response.status === 200) {
-        window.open(response.data.url, '_blank')
+        const unescapedUrl = response.url.replace(/&amp;/g, '&')
+        window.open(unescapedUrl, '_blank')
       }
     } catch (error) {
       // When using API calls, it's a good idea to catch errors and meaningfully display them.

@@ -4,7 +4,10 @@
       <VCol cols="6">
         <div class="mb-3">
           <div class="text-medium-emphasis">Owner</div>
-          <p>{{ ownerName }}</p>
+          <p v-if="!isDeleteMarker">{{ versionOwner }}</p>
+          <p v-else>
+            <span class="font-weight-thin"> Unavailable </span>
+          </p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">AWS Region</div>
@@ -12,11 +15,11 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Last Modified</div>
-          <p>{{ lastModified }}</p>
+          <p>{{ new Date(lastModified).toString() }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Size</div>
-          <p>{{ size }}</p>
+          <p>{{ versionSize }}</p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Type</div>
@@ -38,18 +41,26 @@
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Entity Tag (ETag)</div>
-          <p><CopyText :text-to-copy="eTag" />{{ eTag }}</p>
+          <p v-if="!isDeleteMarker">
+            <CopyText :text-to-copy="versionETag" />{{ versionETag }}
+          </p>
+          <p v-else>
+            <span class="font-weight-thin"> Unavailable </span>
+          </p>
         </div>
         <div class="mb-3">
           <div class="text-medium-emphasis">Object URL</div>
-          <p>
-            <CopyText :text-to-copy="objectUrl" />
+          <p v-if="!isDeleteMarker">
+            <CopyText :text-to-copy="versionObjectUrl" />
             <a
               target="_blank"
-              :href="objectUrl"
+              :href="versionObjectUrl"
               class="text-decoration-none text-primary"
-              >{{ objectUrl }}</a
+              >{{ versionObjectUrl }}</a
             >
+          </p>
+          <p v-else>
+            <span class="font-weight-thin"> Unavailable </span>
           </p>
         </div>
       </VCol>
@@ -59,6 +70,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { findLastActiveVersion } from '../../helpers/commonHelpers'
 import { useBuckets } from '../../helpers/useBuckets'
 import CopyText from './CopyText.vue'
 /**
@@ -67,12 +79,14 @@ import CopyText from './CopyText.vue'
  * @property {String} Props.lastModified  - The last modified date of the item
  * @property {String} Props.size - The size as a string with a label
  * @property {String} Props.itemType - The item file type
+ * @property {Boolean} Props.isDeleteMarker - Boolean for if the item version has been deleted
  * @property {String} Props.name - The name of the item
  * @property {String} Props.itemKey - The key for the item
  * @property {String} Props.uri - The aws s3 uri https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/s3/AmazonS3URI.html
  * @property {String} Props.arn - The arn (Amazon Resource Name) https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-arns.html
  * @property {String} Props.eTag - The etag (entity tag) of the item https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
  * @property {String} Props.objectUrl - The item object url https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-bucket-intro.html
+ * @property {Boolean} Props.hasVersions - Boolean if the item has versioning
  */
 /** @type {Props} */
 
@@ -92,6 +106,10 @@ const props = defineProps({
   itemType: {
     type: String,
     default: ''
+  },
+  isDeleteMarker: {
+    type: Boolean,
+    default: false
   },
   name: {
     type: String,
@@ -116,11 +134,35 @@ const props = defineProps({
   objectUrl: {
     type: String,
     default: ''
+  },
+  versions: {
+    type: Array,
+    default: () => []
+  },
+  hasVersions: {
+    type: Boolean,
+    default: false
   }
 })
 const { bucketLocation } = useBuckets()
-const eTag = computed(() =>
-  props.eTag ? props.eTag.replace(/&quot;/g, '') : ''
+const lastActive = computed(() => findLastActiveVersion(props.versions))
+const versionETag = computed(() =>
+  props.hasVersions
+    ? lastActive.value?.e_tag?.replace(/&quot;/g, '')
+    : props.eTag
+    ? props.eTag.replace(/&quot;/g, '')
+    : ''
+)
+const versionObjectUrl = computed(() =>
+  props.hasVersions && props.isDeleteMarker
+    ? `${lastActive.value.object_url}?versionId=${lastActive.value.version_id}`
+    : props.objectUrl
+)
+const versionSize = computed(() =>
+  props.hasVersions ? lastActive.value.size : props.size
+)
+const versionOwner = computed(() =>
+  props.hasVersions ? lastActive.value?.owner_name : props.ownerName
 )
 </script>
 <style scoped></style>

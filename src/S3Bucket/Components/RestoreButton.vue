@@ -1,6 +1,11 @@
 <template>
   <ErrorIcon :error="restoreError" />
-  <VBtn icon="mdi-file-undo" title="Restore File" @click="restoreItem" />
+  <VBtn
+    icon="mdi-file-undo"
+    :title="buttonText"
+    :disabled="isDeleteMarker"
+    @click="restoreItem"
+  />
 </template>
 
 <script setup>
@@ -10,46 +15,50 @@ import { useBuckets } from '../../helpers/useBuckets'
 import ErrorIcon from './ErrorIcon.vue'
 /**
  * @typedef {Object} Props
- * @property {String} Props.itemKey - The file item key
- * @property {String} Props.path - The file item path
- * @property {String} Props.versionId - The version id for the Bucket item
+ * @property {String} Props.itemKey - The original file item key
+ * @property {Boolean} Props.isDeleteMarker - Boolean if the item is a delete marker (Delete markers are metadata and cannot be restored)
+ * @property {String} Props.versionId - The version id for a version of the item
+ * @property {Boolean} Props.buttonShowId - Boolean if button text should show the version ID
  */
 /** @type {Props} */
-
 const props = defineProps({
   itemKey: {
     type: String,
     default: ''
   },
-  path: {
-    type: String,
-    default: ''
+  isDeleteMarker: {
+    type: Boolean,
+    default: false
   },
   versionId: {
     type: String,
     default: ''
+  },
+  buttonShowId: {
+    type: Boolean,
+    default: false
   }
 })
 
 const api = inject('api')
 const { bucketResource, refreshResource } = useBuckets(api)
 const restoreError = ref()
-
-// TODO CMP-127 - This button requires versioning and additional work
-// Currently is disabled in the example
+const buttonText = computed(() =>
+  props.buttonShowId
+    ? `Restore Latest Version [${props.versionId}]`
+    : 'Restore File'
+)
 const retoreItemForm = computed(() => ({
-  key: props.itemKey,
-  path: props.path,
+  resource_id: bucketResource.value.id,
   version_id: props.versionId,
-  restore: 'True'
+  key: props.itemKey
 }))
 
 const restoreItem = async () => {
-  // TODO - Backend issue
   try {
     const formData = convertObjectToFormData(retoreItemForm.value)
-    await api.base.instance.post(
-      `ajax/s3-promote-version/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/promote_version',
       formData
     )
     refreshResource()

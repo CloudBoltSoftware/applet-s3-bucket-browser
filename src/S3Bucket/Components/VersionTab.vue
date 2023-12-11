@@ -1,7 +1,7 @@
 <template>
   <VProgressCircular v-if="isLoading" indeterminate />
   <div v-else>
-    <VBanner v-if="versionInfo && !versionInfo.status">
+    <VBanner v-if="!bucketVersioningEnabled">
       <template #prepend>
         <VIcon color="error" icon="mdi-alert" class="text-h3" />
       </template>
@@ -9,8 +9,8 @@
         <div class="mr-6">
           <p class="text-h5 mb-2">
             Bucket
-            <span class="font-weight-medium">{{ resource.name }}</span> doesn't
-            have Bucket Versioning enabled
+            <span class="font-weight-medium">{{ bucketResource.name }}</span>
+            doesn't have Bucket Versioning enabled
           </p>
           <p class="text-body-1">
             We recommend that you enable Bucket Versioning to help protect
@@ -31,13 +31,15 @@
           variant="flat"
           size="large"
           @click="enableVersioning"
-          >Enable Bucket Versioning</VBtn
         >
+          <ErrorIcon size="small" :error="versioningError" />
+          Enable Bucket Versioning
+        </VBtn>
       </VBannerText>
     </VBanner>
     <VBanner v-if="versionMessage">
       <template #prepend>
-        <VIcon color="success" icon="mdi-check-circle" class="text-h3" />
+        <VIcon color="success" icon="mdi-check-circle" class="text-h2 mt-1" />
       </template>
       <VBannerText class="text-h5 mt-1">
         {{ versionMessage }}
@@ -54,21 +56,22 @@
       <template #[`item.item_type`]>
         {{ itemType }}
       </template>
-      <template #[`item.last_modified`]="{ item }">
-        {{ parseDate(item.raw) }}
+      <template #[`item.last_modified`]="row">
+        {{ parseDate(rawItemData(row)) }}
       </template>
-      <template #[`item.actions`]="{ item }">
+      <template #[`item.actions`]="row">
         <ErrorIcon size="large" :error="formError" />
-        <VBtnGroup>
+        <VBtnGroup variant="text">
           <VBtn
             icon="mdi-file-download"
             title="Download"
-            @click="() => downloadFile(item.raw.download_url)"
+            :disabled="rawItemData(row).is_delete_marker"
+            @click="() => downloadFile(rawItemData(row).download_url)"
           />
           <RestoreButton
-            :item-key="item.raw.key"
-            :path="item.raw.path"
-            :version-id="item.raw.version_id"
+            :item-key="name"
+            :version-id="rawItemData(row).version_id"
+            :is-delete-marker="rawItemData(row).is_delete_marker"
           />
         </VBtnGroup>
       </template>
@@ -76,6 +79,19 @@
   </div>
 </template>
 
+<script>
+import {
+  downloadFile,
+  parseDate,
+  rawItemData
+} from '../../helpers/commonHelpers'
+
+export default {
+  rawItemData,
+  downloadFile,
+  parseDate
+}
+</script>
 <script setup>
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import { convertObjectToFormData } from '../../helpers/axiosHelper'
@@ -85,13 +101,19 @@ import RestoreButton from './RestoreButton.vue'
 
 /**
  * @typedef {Object} Props
+ * @property {Boolean} Props.hasVersions - Boolean if the item has versioning enabled
  * @property {String} Props.name - The name of the item
  * @property {Array} Props.versions - The versions of the S3 Bucket item
  * @property {String} Props.itemType - The type of the S3 Bucket item
+ * @property {String} Props.itemKey - The key for the item
  */
 /** @type {Props} */
 
 const props = defineProps({
+  hasVersions: {
+    type: Boolean,
+    default: false
+  },
   name: {
     type: String,
     default: ''
@@ -107,40 +129,26 @@ const props = defineProps({
   itemKey: {
     type: String,
     default: ''
-  },
-  eTag: {
-    type: String,
-    default: ''
   }
 })
-// TODO CMP-127 - Re-enable once Version updates are fixed. Update to handle versioning
+const api = inject('api')
+const { bucketResource, refreshResource } = useBuckets(api)
 const isLoading = ref(false)
 const formError = ref()
-const versionInfo = ref()
+const versioningError = ref()
+const versionStatus = ref(false)
 const versionMessage = ref('')
-const api = inject('api')
-const { bucketLocation, bucketResource } = useBuckets()
-
-const eTag = computed(() =>
-  props.eTag ? props.eTag.replace(/&quot;/g, '') : ''
+const bucketVersioningEnabled = computed(() =>
+  props.hasVersions ? props.hasVersions : versionStatus.value
 )
+
 const versionForm = computed(() => ({
-  e_tag: encodeURIComponent(eTag.value),
-  key: encodeURIComponent(props.itemKey),
-  location: encodeURIComponent(bucketLocation.value)
+  resource_id: bucketResource.value.id,
+  key: encodeURIComponent(props.itemKey)
 }))
 const versionEnableForm = computed(() => ({
-  bucket_name: encodeURIComponent(bucketResource.value.name)
+  resource_id: bucketResource.value.id
 }))
-const parseDate = (entry) => {
-  // Converting from database UTC values to local string
-  const modifiedDate = new Date(`${entry.last_modified} UTC`).toDateString()
-  const modifiedTime = new Date(
-    `${entry.last_modified} UTC`
-  ).toLocaleTimeString('en-US')
-
-  return `${modifiedDate}  ${modifiedTime}`
-}
 
 const versionHeaders = [
   { title: 'Name', align: 'start', key: 'name' },
@@ -153,40 +161,34 @@ const versionHeaders = [
 ]
 
 const fetchVersionInfo = async () => {
-  // TODO - Backend issue
   try {
     const formData = convertObjectToFormData(versionForm.value)
-    const response = await api.base.instance.post(
-      `ajax/s3-get-versions/${bucketResource.value.id}/`,
+    const response = await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/get_versions',
       formData
     )
     isLoading.value = false
-    versionInfo.value = response.data
+    versionStatus.value = response?.status
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    formError.value = error
+    versioningError.value = error
   }
 }
 
 const enableVersioning = async () => {
   try {
     const formData = convertObjectToFormData(versionEnableForm.value)
-    const response = await api.base.instance.post(
-      `ajax/s3-enable-versioning/${bucketResource.value.id}/`,
+    const response = await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/enable_versioning',
       formData
     )
-    versionMessage.value = response.data.message
+    versionMessage.value = response.message
+    versionStatus.value = response.status
+    refreshResource()
   } catch (error) {
     // When using API calls, it's a good idea to catch errors and meaningfully display them.
-    formError.value = error
+    versioningError.value = error
   }
-}
-
-// TODO - Re-enable once Version updates are fixed. Requires download_url
-const downloadFile = (url) => {
-  // TODO Better Decoding needed
-  const adjustedUrl = url.replace(/&amp;/g, '&')
-  window.open(adjustedUrl, '_blank')
 }
 
 onMounted(fetchVersionInfo)

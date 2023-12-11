@@ -10,6 +10,7 @@ export function useDrop() {
   const { bucketResource, bucketPath } = useBuckets()
 
   const dropFilesForm = computed(() => ({
+    resource_id: bucketResource.value.id,
     bucket_name: bucketResource.value.name,
     path: bucketPath.value
   }))

@@ -1,5 +1,5 @@
 <template>
-  <VDialog v-model="overviewDialog" width="1024">
+  <VDialog v-model="overviewDialog" width="1200">
     <template #activator="{ props: overviewProps }">
       <VBtn v-bind="overviewProps" icon="mdi-information" title="Details" />
     </template>
@@ -14,13 +14,7 @@
           <VTab class="active tab-btn" value="overview" size="x-large"
             >Overview</VTab
           >
-          <VTab
-            v-if="hasVersionMode"
-            class="tab-btn"
-            value="versions"
-            size="x-large"
-            >Versions</VTab
-          >
+          <VTab class="tab-btn" value="versions" size="x-large">Versions</VTab>
         </VTabs>
         <VBtn
           icon="mdi-close"
@@ -32,10 +26,10 @@
       <VCardText class="pt-0">
         <VWindow v-model="tab">
           <VWindowItem value="overview">
-            <OverviewTab v-bind="mappedItem" />
+            <OverviewTab v-bind="mappedItem" :has-versions="hasVersionMode" />
           </VWindowItem>
           <VWindowItem value="versions">
-            <VersionTab v-bind="mappedItem" />
+            <VersionTab v-bind="mappedItem" :has-versions="hasVersionMode" />
           </VWindowItem>
         </VWindow>
       </VCardText>
@@ -55,22 +49,31 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useBuckets } from '../../helpers/useBuckets'
 import OverviewTab from '../Components/OverviewTab.vue'
 import VersionTab from '../Components/VersionTab.vue'
+
 /**
  * @typedef {Object} Props
  * @property {Object} Props.sourceItem - The selected S3 Bucket item
+ * @property {Boolean} Props.hasVersions - Boolean if the item has versioning
  */
 /** @type {Props} */
 const props = defineProps({
   sourceItem: {
     type: Object,
     default: () => {}
+  },
+  hasVersions: {
+    type: Boolean,
+    default: false
   }
 })
 
+const { bucketState } = useBuckets()
 const tab = ref(null)
 const overviewDialog = ref(false)
+const hasVersionMode = computed(() => bucketState.value.versioning_enabled)
 const mappedItem = computed(() => ({
   ownerName: props.sourceItem.owner_name,
   itemKey: props.sourceItem.key,
@@ -79,9 +82,8 @@ const mappedItem = computed(() => ({
   uri: props.sourceItem.s3_uri,
   eTag: props.sourceItem.e_tag,
   objectUrl: props.sourceItem.object_url,
+  isDeleteMarker: props.sourceItem.is_delete_marker,
   ...props.sourceItem
 }))
-// TODO CMP-127 - Re-enable once Version updates are fixed.
-const hasVersionMode = ref(false)
 </script>
 <style scoped></style>

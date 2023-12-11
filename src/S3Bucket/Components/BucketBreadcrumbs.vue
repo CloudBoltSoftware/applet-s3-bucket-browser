@@ -33,6 +33,7 @@ const breadcrumbs = computed(() => {
       title: bucketResource.value.name,
       disabled: false,
       path: {
+        resource_id: bucketResource.value.id,
         name: bucketResource.value.name,
         path: ''
       }
@@ -45,6 +46,7 @@ const breadcrumbs = computed(() => {
           title: entry.name,
           disabled: false,
           path: {
+            resource_id: bucketResource.value.id,
             name: entry.name,
             path: entry.path
           }

@@ -20,7 +20,6 @@ export function convertObjectToMultiFormData(object, files, type) {
       formData.append('object_file', file)
     })
   } else if (type === 'folder') {
-    formData.append('folder_name', files[0].name)
     files.forEach((file, key) => {
       formData.append(`file[${key}].path`, file.webkitRelativePath)
       formData.append(`file[${key}]`, file)

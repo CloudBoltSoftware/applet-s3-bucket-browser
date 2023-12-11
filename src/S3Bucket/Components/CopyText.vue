@@ -17,7 +17,7 @@
 
 <script setup>
 /**
- * This component from the CUI provides copy-to-clipboard feature
+ * This component from the SSP provides copy-to-clipboard feature
  * It displays an icon along with a tooltip
  * Accepts text-to-copy prop
  * For eg: <CopyText :text-to-copy="test_value" />

@@ -1,7 +1,7 @@
 <template>
   <VDialog
     v-model="folderDialog"
-    width="1024"
+    width="1200"
     @update:model-value="(val) => !val && onCancel()"
   >
     <template #activator="{ props: folderProps }">
@@ -89,10 +89,12 @@ import MultiFileChips from './MultiFileChips.vue'
 const api = inject('api')
 const { bucketPath, bucketResource, refreshResource } = useBuckets(api)
 const emit = defineEmits(['closeDialog'])
+
 const isUploading = ref(false)
 const uploadFolder = ref()
 const uploadFolderForm = ref({
   bucket_name: bucketResource.value.name,
+  resource_id: bucketResource.value.id,
   folder_path: bucketPath.value
 })
 const formIsValid = ref(false)
@@ -103,7 +105,7 @@ const requiredRule = [(value) => value.length > 0 || 'This field is required']
 const onCancel = () => {
   emit('closeDialog')
   folderDialog.value = false
-  formError.value = ''
+  formError.value = undefined
   uploadFolder.value = []
 }
 
@@ -118,8 +120,8 @@ async function folderUploadModal() {
     // Because this function is `async`, we can use `await` to wait for the API call to finish.
     // Alternatively, we could use `.then()` and `.catch()` to handle the response.
     // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
-    await api.base.instance.post(
-      `ajax/s3-upload-new-folder/${bucketResource.value.id}/`,
+    await api.v3.cmp.inboundWebHooks.runPost(
+      's3_bucket_browser/upload_folder',
       formData
     )
     emit('closeDialog')

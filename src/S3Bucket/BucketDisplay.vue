@@ -91,8 +91,7 @@ const { dropZoneRef, onDrop, dropModal, dropError, clearModal, clearError } =
 const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
 onUnmounted(clearTimeout(clearError))
 
-// TODO CMP-127 - Update when Version mode is restored
-const hasVersionMode = ref(false)
+const hasVersionMode = computed(() => bucketState.value.versioning_enabled)
 const isVersionMode = ref(false)
 
 const tableError = ref()
@@ -102,8 +101,15 @@ const dataTableItems = computed(() => {
   if (isVersionMode.value) {
     return list
   }
+  // Removed all items with delete_markers, or if the item is not the latest version
   return list.filter((item) =>
-    !item.is_file ? item : item.is_delete_marker ? false : item
+    item.is_delete_marker
+      ? false
+      : !item.is_file
+      ? item
+      : item.is_latest
+      ? item
+      : false
   )
 })
 </script>
