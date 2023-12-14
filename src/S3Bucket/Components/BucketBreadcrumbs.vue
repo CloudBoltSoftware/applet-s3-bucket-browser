@@ -8,6 +8,7 @@
         v-else
         class="text-blue-darken-3 text-none text-h6 px-0"
         variant="plain"
+        density="default"
         @click="fetchSelection(entry.path)"
         >{{ entry.title }}</VBtn
       >

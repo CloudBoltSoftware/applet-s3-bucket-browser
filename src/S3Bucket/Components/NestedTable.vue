@@ -56,7 +56,6 @@
       <td v-if="rawItemData(row).is_file" class="d-inline-flex">
         <VBtnGroup variant="text">
           <VBtn
-            v-if="isVersionMode"
             icon="mdi-file-download"
             title="Download"
             :disabled="rawItemData(row).is_delete_marker"
