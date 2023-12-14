@@ -1,0 +1,14 @@
+{
+  "description": "",
+  "id": "OHK-e1sjc4cj",
+  "last_updated": "2023-12-14",
+  "max_retries": 0,
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "name": "S3 Get Buckets",
+  "resource_technologies": [],
+  "script_filename": "cb_plugin_192_vb18H7U_YNerqqU.py",
+  "shared": false,
+  "target_os_families": [],
+  "type": "CloudBolt Plug-in"
+}

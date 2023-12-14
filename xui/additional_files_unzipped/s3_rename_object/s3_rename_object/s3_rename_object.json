@@ -1,0 +1,14 @@
+{
+  "description": "",
+  "id": "OHK-2qpq0lt7",
+  "last_updated": "2023-12-14",
+  "max_retries": 0,
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "name": "S3 Rename Object",
+  "resource_technologies": [],
+  "script_filename": "cb_plugin_217_J7DzT8z_kPU34Id.py",
+  "shared": false,
+  "target_os_families": [],
+  "type": "CloudBolt Plug-in"
+}

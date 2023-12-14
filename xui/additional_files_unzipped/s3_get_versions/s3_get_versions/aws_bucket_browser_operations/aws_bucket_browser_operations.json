@@ -1,0 +1,15 @@
+{
+  "description": "",
+  "id": "SHM-pd0zlw6c",
+  "label": "S3 Bucket Browser Operations",
+  "last_updated": "2023-12-14",
+  "max_retries": 0,
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "module_name": "aws_bucket_browser_operations",
+  "name": "aws_bucket_browser_operations",
+  "resource_technologies": [],
+  "script_filename": "aws_bucket_browser_operations.py",
+  "shared": true,
+  "type": "Shared Module"
+}

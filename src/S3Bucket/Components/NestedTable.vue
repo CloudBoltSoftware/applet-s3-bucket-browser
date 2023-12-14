@@ -3,6 +3,7 @@
   <VDataTable
     v-model:expanded="expanded"
     :headers="isVersionMode ? versionHeaders : headers"
+    :items="items"
     :item-value="(row) => row"
     :loading="bucketLoading"
     show-select
@@ -161,6 +162,10 @@ import RestoreButton from './RestoreButton.vue'
  */
 /** @type {Props} */
 defineProps({
+  items: {
+    type: Array,
+    default: () => []
+  },
   isVersionMode: {
     type: Boolean,
     default: false

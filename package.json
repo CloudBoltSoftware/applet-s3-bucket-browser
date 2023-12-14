@@ -17,6 +17,19 @@
         "maximum_version": ""
       }
     ],
+    "met_inbound_web_hook_dependencies": [
+      "inbound_web_hook_s3_browser.zip",
+      "inbound_web_hook_s3_create_folder.zip",
+      "inbound_web_hook_s3_delete_item.zip",
+      "inbound_web_hook_s3_download_item.zip",
+      "inbound_web_hook_s3_enable_versioning.zip",
+      "inbound_web_hook_s3_get_buckets.zip",
+      "inbound_web_hook_s3_get_versions.zip",
+      "inbound_web_hook_s3_promote_version.zip",
+      "inbound_web_hook_s3_rename_object.zip",
+      "inbound_web_hook_s3_upload_folder.zip",
+      "inbound_web_hook_s3_upload_object.zip"
+    ],
     "met_targets": {
       "ssp": {
         "fullPage": [
@@ -73,11 +86,11 @@
   "dependencies": {
     "@vueuse/core": "^10.3.0",
     "camelcase": "^7.0.1",
-    "vuetify": "^3.1.13"
+    "vuetify": "^3.4.7"
   },
   "devDependencies": {
     "@cloudbolt/js-sdk": "^0.6.2",
-    "@cloudbolt/xui-packager": "^1.1.0",
+    "@cloudbolt/xui-packager": "^1.1.2",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@vitejs/plugin-vue": "^4.2.3",
     "eslint": "^8.42.0",

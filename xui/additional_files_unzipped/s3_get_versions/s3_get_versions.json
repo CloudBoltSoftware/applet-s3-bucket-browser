@@ -1,0 +1,11 @@
+{
+  "action_input_default_values": [],
+  "authentication_method": "normal",
+  "base_action_name": "S3 Get Versions",
+  "id": "IWH-subrqwjr",
+  "label": "S3 Get Versions",
+  "last_updated": "2023-12-14",
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "uri_path": "s3_bucket_browser/get_versions"
+}

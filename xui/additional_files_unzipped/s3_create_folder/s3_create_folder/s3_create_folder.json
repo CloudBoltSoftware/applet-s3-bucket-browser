@@ -1,0 +1,14 @@
+{
+  "description": "",
+  "id": "OHK-jpbu1mlg",
+  "last_updated": "2023-12-14",
+  "max_retries": 0,
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "name": "S3 Create Folder",
+  "resource_technologies": [],
+  "script_filename": "cb_plugin_216_x3xFrIr_LOCVJ29.py",
+  "shared": false,
+  "target_os_families": [],
+  "type": "CloudBolt Plug-in"
+}
