@@ -8,6 +8,7 @@ from utilities.get_current_userprofile import get_current_userprofile
 # Global Variables
 logger = ThreadLogger(__name__)
 
+
 def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     Delete given item(s)
@@ -16,12 +17,12 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     try:
         user = get_current_userprofile()
-        resource_id =  parameters.get("resource_id")
+        resource_id = parameters.get("resource_id")
         resource = get_object_or_404(Resource, pk=resource_id)
         aws = get_object_or_404(AWSHandler, pk=resource.aws_rh_id)
         s3_client = aws.get_boto3_client(None, "s3")
         file_path = parameters.get("all_files_path", [])
-        all_files_path = json.loads(parameters.get("all_files_path", '[]'))
+        all_files_path = json.loads(parameters.get("all_files_path", "[]"))
         files_to_delete = []
         for file_path in all_files_path:
             if not file_path["object_type"] == "Folder":
@@ -49,7 +50,12 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         except Exception as e:
             logger.exception("Failed to delete file")
         # Log this action
-        logger.info("User %s deleted %s from S3 bucket: %s" % (user, files_to_delete, resource.name))
+        logger.info(
+            "User %s deleted %s from S3 bucket: %s"
+            % (user, files_to_delete, resource.name)
+        )
 
     except Exception as e:
-        logger.exception(f'Failed to delete files from S3 bucket {resource.name} by user {user}')
+        logger.exception(
+            f"Failed to delete files from S3 bucket {resource.name} by user {user}"
+        )

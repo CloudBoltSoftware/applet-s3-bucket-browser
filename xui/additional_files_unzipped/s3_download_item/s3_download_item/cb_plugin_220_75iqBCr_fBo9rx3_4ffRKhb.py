@@ -12,6 +12,7 @@ import botocore
 # Global Variables
 logger = ThreadLogger(__name__)
 
+
 def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     Download a single item
@@ -19,22 +20,26 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         :param path: The path or key of the file to be downloaded
     """
     user = get_current_userprofile()
-    resource_id =  parameters.get("resource_id")
+    resource_id = parameters.get("resource_id")
     resource = get_object_or_404(Resource, pk=resource_id)
     aws = get_object_or_404(AWSHandler, pk=resource.aws_rh_id)
     # Assume `aws` is an object that has the AWS credentials as attributes
-    aws_access_key_id = aws.serviceaccount  # replace with how you access your credentials
-    aws_secret_access_key = aws.servicepasswd  # replace with how you access your credentials
+    aws_access_key_id = (
+        aws.serviceaccount
+    )  # replace with how you access your credentials
+    aws_secret_access_key = (
+        aws.servicepasswd
+    )  # replace with how you access your credentials
 
     # Creating a custom configuration
-    s3_config = botocore.client.Config(signature_version='s3v4')
+    s3_config = botocore.client.Config(signature_version="s3v4")
 
     # Creating the S3 client with the specified configuration
     s3_client = boto3.client(
-        's3',
+        "s3",
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
-        config=s3_config
+        config=s3_config,
     )
 
     file_path = parameters.get("path", None)
@@ -45,9 +50,8 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         ExpiresIn=3600,
     )
     # Log this action
-    logger.info("User %s downloaded %s from S3 bucket: %s" % (user, file_path, resource.name))
+    logger.info(
+        "User %s downloaded %s from S3 bucket: %s" % (user, file_path, resource.name)
+    )
 
-    return {
-        "status": 200,
-        "url": mark_safe(f"{url}")
-    }
+    return {"status": 200, "url": mark_safe(f"{url}")}

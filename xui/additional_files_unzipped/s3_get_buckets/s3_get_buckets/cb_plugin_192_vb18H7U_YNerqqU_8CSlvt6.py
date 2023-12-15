@@ -15,8 +15,6 @@ def inbound_web_hook_get(request):
         .filter(lifecycle="ACTIVE")
         .order_by("-created")
     )
-    bucket_info = [{"id":bucket.id, "name":bucket.name} for bucket in buckets]
+    bucket_info = [{"id": bucket.id, "name": bucket.name} for bucket in buckets]
 
-    return {
-        "bucket_info": bucket_info
-    }
+    return {"bucket_info": bucket_info}

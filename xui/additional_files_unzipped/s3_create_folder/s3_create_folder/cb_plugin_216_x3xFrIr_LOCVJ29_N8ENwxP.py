@@ -8,6 +8,7 @@ from utilities.get_current_userprofile import get_current_userprofile
 # Global Variables
 logger = ThreadLogger(__name__)
 
+
 def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     Create a folder in an S3 bucket
@@ -18,7 +19,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     try:
         user = get_current_userprofile()
-        resource_id =  parameters.get("resource_id")
+        resource_id = parameters.get("resource_id")
         resource = get_object_or_404(Resource, pk=resource_id)
         folder_path = os.path.join(
             parameters.get("path", None), parameters.get("folder_name", None)
@@ -28,10 +29,16 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         s3_client = aws.get_boto3_client(None, "s3")
         s3_client.put_object(Bucket=bucket_name, Key=(folder_path + "/"))
         # Log this action
-        logger.info("User %s created folder %s in S3 bucket: %s" % (user, folder_path, resource.name))
+        logger.info(
+            "User %s created folder %s in S3 bucket: %s"
+            % (user, folder_path, resource.name)
+        )
         return {"status": True, "message": "Successfully Created"}
     except Exception as e:
-        # log error message with user 
-        logger.exception("User %s failed to create folder %s in S3 bucket: %s" % (user, folder_path, resource.name))
+        # log error message with user
+        logger.exception(
+            "User %s failed to create folder %s in S3 bucket: %s"
+            % (user, folder_path, resource.name)
+        )
         error_message = e.args[0]
         return {"status": False, "message": error_message}

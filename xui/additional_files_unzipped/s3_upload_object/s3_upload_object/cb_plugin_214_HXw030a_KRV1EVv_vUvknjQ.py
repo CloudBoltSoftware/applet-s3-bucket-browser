@@ -8,6 +8,7 @@ from utilities.get_current_userprofile import get_current_userprofile
 # Global Variables
 logger = ThreadLogger(__name__)
 
+
 def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     Upload a single item
@@ -18,7 +19,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         :param object_file: The file data
     """
     try:
-        resource_id =  parameters.get("resource_id")
+        resource_id = parameters.get("resource_id")
         user = get_current_userprofile()
 
         resource = get_object_or_404(Resource, pk=resource_id)
@@ -31,12 +32,18 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         aws = get_object_or_404(AWSHandler, pk=resource.aws_rh_id)
         s3_client = aws.get_boto3_client(None, "s3")
         s3_client.put_object(Body=file, Bucket=bucket_name, Key=file_name)
-        
+
         # Log this action
-        logger.info("User %s uploaded file %s to S3 bucket: %s" % (user, file_name, resource.name))
+        logger.info(
+            "User %s uploaded file %s to S3 bucket: %s"
+            % (user, file_name, resource.name)
+        )
         return {"status": True, "message": "Successfully Uploaded"}
 
     except Exception as e:
-        logger.exception("User %s failed to upload file %s to S3 bucket: %s" % (user, file_name, resource.name))
+        logger.exception(
+            "User %s failed to upload file %s to S3 bucket: %s"
+            % (user, file_name, resource.name)
+        )
         error_message = e.args[0]
         return {"status": False, "message": error_message}

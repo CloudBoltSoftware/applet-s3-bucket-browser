@@ -8,6 +8,7 @@ from utilities.get_current_userprofile import get_current_userprofile
 # Global Variables
 logger = ThreadLogger(__name__)
 
+
 def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     Rename an object on S3
@@ -19,7 +20,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
     """
     try:
         user = get_current_userprofile()
-        resource_id =  parameters.get("resource_id")
+        resource_id = parameters.get("resource_id")
         resource = get_object_or_404(Resource, pk=resource_id)
         old_object_name = os.path.join(
             parameters.get("path", None), parameters.get("old_object_name", None)
@@ -36,11 +37,17 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         )
         s3_client.delete_object(Bucket=bucket_name, Key=old_object_name)
         # Log this action
-        logger.info("User %s renamed %s to %s in S3 bucket: %s" % (user, old_object_name, new_object_name, bucket_name))
+        logger.info(
+            "User %s renamed %s to %s in S3 bucket: %s"
+            % (user, old_object_name, new_object_name, bucket_name)
+        )
 
         return {"status": True, "message": "Successfully Renamed"}
     except Exception as e:
         error_message = e.args[0]
-        # log error message with user 
-        logger.exception("User %s failed to rename %s to %s in S3 bucket: %s" % (user, old_object_name, new_object_name, bucket_name))
+        # log error message with user
+        logger.exception(
+            "User %s failed to rename %s to %s in S3 bucket: %s"
+            % (user, old_object_name, new_object_name, bucket_name)
+        )
         return {"status": False, "message": error_message}
