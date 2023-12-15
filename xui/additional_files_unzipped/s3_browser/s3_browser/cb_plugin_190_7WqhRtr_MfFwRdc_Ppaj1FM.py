@@ -68,7 +68,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
       location_obj = s3_client.get_bucket_location(Bucket=resource.name)
       bucket_location = location_obj['LocationConstraint'] if not location_obj['LocationConstraint'] == None else "us-east-1"
     except Exception as e:
-        logger.info(e)
+        logger.exception("Could not set bucket_location. Please check s3 bucket region")
 
     # Get a list of all items in the S3 path
     s3_list = operations.get_folder_with_items(aws, resource.name, s3_path, bucket_location, flat)

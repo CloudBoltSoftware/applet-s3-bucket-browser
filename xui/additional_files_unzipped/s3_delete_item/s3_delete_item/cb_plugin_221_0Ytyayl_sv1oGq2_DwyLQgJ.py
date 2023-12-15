@@ -47,10 +47,9 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
                 Delete={"Objects": [{"Key": name} for name in files_to_delete]},
             )
         except Exception as e:
-            logger.error(e)
+            logger.exception("Failed to delete file")
         # Log this action
         logger.info("User %s deleted %s from S3 bucket: %s" % (user, files_to_delete, resource.name))
 
     except Exception as e:
-        error_message = e.args[0]
-        logger.error(f'Failed to delete files from S3 bucket {resource.name} by user {user} with error {error_message}')
+        logger.exception(f'Failed to delete files from S3 bucket {resource.name} by user {user}')

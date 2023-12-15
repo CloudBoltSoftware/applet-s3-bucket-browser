@@ -1,11 +1,11 @@
 {
-  "action_input_default_values": [],
-  "authentication_method": "normal",
-  "base_action_name": "S3 Promote Version",
-  "id": "IWH-8scap681",
-  "label": "S3 Promote Version",
-  "last_updated": "2023-12-14",
-  "maximum_version_required": "",
-  "minimum_version_required": "8.6",
-  "uri_path": "s3_bucket_browser/promote_version"
+    "action_input_default_values": [],
+    "authentication_method": "normal",
+    "base_action_name": "S3 Promote Version",
+    "id": "IWH-8scap681",
+    "label": "S3 Promote Version",
+    "last_updated": "2023-12-15",
+    "maximum_version_required": "",
+    "minimum_version_required": "8.6",
+    "uri_path": "s3_bucket_browser/promote_version"
 }

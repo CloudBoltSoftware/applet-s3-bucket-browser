@@ -42,5 +42,5 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
     except Exception as e:
         error_message = e.args[0]
         # log error message with user 
-        logger.error("User %s failed to rename %s to %s in S3 bucket: %s" % (user, old_object_name, new_object_name, bucket_name))
+        logger.exception("User %s failed to rename %s to %s in S3 bucket: %s" % (user, old_object_name, new_object_name, bucket_name))
         return {"status": False, "message": error_message}

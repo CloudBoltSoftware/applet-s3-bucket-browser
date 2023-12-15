@@ -25,7 +25,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         logger.info("User %s enabled versioning on S3 bucket %s" % (user, resource.name))
         return {"status": True, "message": "Successfully enabled"}
     except Exception as e:
-        error_message = e.args[0]
         # log error by user 
-        logger.error("User %s failed to enable versioning on S3 bucket %s" % (user, resource.name))
+        logger.exception("User %s failed to enable versioning on S3 bucket %s" % (user, resource.name))
+        error_message = e.args[0]
         return {"status": False, "message": error_message}

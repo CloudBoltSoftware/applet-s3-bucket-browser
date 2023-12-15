@@ -77,8 +77,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
             # Re-raise the exception if it was not a 'NoSuchVersion' error
             raise e
     except Exception:
-        logger.error(
+        logger.exception(
             "User %s failed to promote version %s in S3 bucket: %s" % (user, version_id, resource.name)
         )
-        logger.error(Exception)
         raise Exception

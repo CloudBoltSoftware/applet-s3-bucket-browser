@@ -27,7 +27,6 @@ def inbound_web_hook_post(*args, parameters={}, files, **kwargs):
         aws = get_object_or_404(AWSHandler, pk=resource.aws_rh_id)
         s3_client = aws.get_boto3_client(None, "s3")
         for file in files:
-            print('file',file)
             key = parameters.get(file + ".path")
             item = files.get(file)
             if folder_path:
@@ -41,6 +40,5 @@ def inbound_web_hook_post(*args, parameters={}, files, **kwargs):
 
     except Exception as e:
         error_message = e.args[0]
-        logger.error("User %s failed to upload folder %s to S3 bucket: %s" % (user, folder_path, resource.name))
-        logger.error(error_message)
+        logger.exception("User %s failed to upload folder %s to S3 bucket: %s" % (user, folder_path, resource.name))
         return {"status": False, "message": error_message}

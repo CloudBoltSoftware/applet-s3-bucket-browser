@@ -89,6 +89,5 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
     except Exception as e:
         error_message = e.args[0]
         # log error message with user 
-        logger.error("User %s failed to get versions of %s" % (user, key))
-        logger.error(error_message)
+        logger.exception("User %s failed to get versions of %s" % (user, key))
         return {"status": False, "message": error_message}

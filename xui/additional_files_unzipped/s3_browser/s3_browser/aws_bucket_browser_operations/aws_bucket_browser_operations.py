@@ -78,7 +78,7 @@ def get_folder_with_items(aws, bucket_name, main_folder, bucket_location, flat=T
         return_list.extend(result_folders)
 
     except Exception as e:
-        print(
+        logger.exception(
             "Error on line {}".format(
                 sys.exc_info()[-1].tb_lineno), type(e).__name__, e
         )
@@ -166,7 +166,7 @@ def get_files(bucket_name, main_folder, result, flat, bucket_location, s3client=
         return sorted(files_list, key=lambda k: str(k["key"]).lower(), reverse=not sort_a_z)
 
     except Exception as e:
-        print(
+        logger.exception(
             "Error on line {}: {} {}".format(
                 sys.exc_info()[-1].tb_lineno, type(e).__name__, e
             )
@@ -216,7 +216,7 @@ def get_folders(bucket_name, main_folder, delimiter, s3client, sort_a_z):
             files_list, key=lambda k: str(k["key"]).lower(), reverse=not sort_a_z
         )
     except Exception as e:
-        print(
+        logger.exception(
             "Error on line {}".format(
                 sys.exc_info()[-1].tb_lineno), type(e).__name__, e
         )
@@ -261,15 +261,15 @@ def is_versioning_enabled(s3_client, resource_id, default_region):
         return False
 
     except (CustomField.DoesNotExist, CustomFieldValue.DoesNotExist) as error:
-        # This error can arise when s3 buckets are added from discovery. In which case, attempt to find versioning a last with using the default region
-        logger.error(f"CustomField 's3_bucket_region' does not exist. Trying default_region={default_region}")
+        # This error can arise when s3 buckets are added from discovery and their s3_bucket_region parmeter is not set. As a backup, attempt to find versioning info using the default region
+        logger.warning(f"CustomField 's3_bucket_region' does not exist. Trying default_region={default_region}")
         s3_bucket = aws.get_boto3_resource(region_name=default_region, service_name="s3")
 
         if s3_bucket.BucketVersioning(resource.name).status == "Enabled":
             return True
         return False
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {str(e)}")
+        logger.exception(f"An unexpected error occurred: {str(e)}")
         return False
 
 
@@ -313,7 +313,7 @@ def create_presigned_url(bucket_name, object_name, aws, expiration=3600, version
         )
     except botocore.exceptions.ClientError as e:
         # Handle any error that occurred during the generation
-        print(f"An error occurred: {e}")
+        logger.exception(f"An error occurred: {e}")
         return None
 
     return presigned_url

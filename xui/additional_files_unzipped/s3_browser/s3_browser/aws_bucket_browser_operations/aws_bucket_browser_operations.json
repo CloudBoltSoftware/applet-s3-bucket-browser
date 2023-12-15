@@ -2,7 +2,7 @@
     "description": "",
     "id": "SHM-pd0zlw6c",
     "label": "S3 Bucket Browser Operations",
-    "last_updated": "2023-12-14",
+    "last_updated": "2023-12-15",
     "max_retries": 0,
     "maximum_version_required": "",
     "minimum_version_required": "8.6",
