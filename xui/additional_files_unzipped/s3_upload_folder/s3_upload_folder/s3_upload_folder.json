@@ -1,14 +1,14 @@
 {
-    "description": "",
-    "id": "OHK-v773p33k",
-    "last_updated": "2023-12-15",
-    "max_retries": 0,
-    "maximum_version_required": "",
-    "minimum_version_required": "8.6",
-    "name": "S3 Upload Folder",
-    "resource_technologies": [],
-    "script_filename": "cb_plugin_215_r3moU3W_ju0c8Nn_foAUc3X.py",
-    "shared": false,
-    "target_os_families": [],
-    "type": "CloudBolt Plug-in"
+  "description": "",
+  "id": "OHK-v773p33k",
+  "last_updated": "2023-12-15",
+  "max_retries": 0,
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "name": "S3 Upload Folder",
+  "resource_technologies": [],
+  "script_filename": "cb_plugin_215_r3moU3W_ju0c8Nn_foAUc3X.py",
+  "shared": false,
+  "target_os_families": [],
+  "type": "CloudBolt Plug-in"
 }

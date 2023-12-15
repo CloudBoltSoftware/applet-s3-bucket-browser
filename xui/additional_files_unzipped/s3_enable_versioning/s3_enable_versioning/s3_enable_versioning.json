@@ -1,14 +1,14 @@
 {
-    "description": null,
-    "id": "OHK-xjwcz60z",
-    "last_updated": "2023-12-15",
-    "max_retries": 0,
-    "maximum_version_required": "",
-    "minimum_version_required": "8.6",
-    "name": "S3 Enable Versioning",
-    "resource_technologies": [],
-    "script_filename": "cb_plugin_219_nWOWRYx_XiruzgF_KiHpbJh.py",
-    "shared": false,
-    "target_os_families": [],
-    "type": "CloudBolt Plug-in"
+  "description": null,
+  "id": "OHK-xjwcz60z",
+  "last_updated": "2023-12-15",
+  "max_retries": 0,
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "name": "S3 Enable Versioning",
+  "resource_technologies": [],
+  "script_filename": "cb_plugin_219_nWOWRYx_XiruzgF_KiHpbJh.py",
+  "shared": false,
+  "target_os_families": [],
+  "type": "CloudBolt Plug-in"
 }

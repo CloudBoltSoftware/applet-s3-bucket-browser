@@ -1,12 +1,15 @@
 <template>
   <VBreadcrumbs class="pl-0 my-1">
     <VBreadcrumbsItem v-for="(entry, idx) in breadcrumbs" :key="entry.title">
-      <div v-if="entry.disabled" class="text-grey-darken-3 text-none text-h6">
+      <div
+        v-if="entry.disabled"
+        class="text-grey-darken-3 text-none text-h6 pb-1"
+      >
         {{ entry.title }}
       </div>
       <VBtn
         v-else
-        class="text-blue-darken-3 text-none text-h6 px-0"
+        class="text-blue-darken-3 text-none text-h6 px-0 pt-0 pb-1"
         variant="plain"
         density="default"
         @click="fetchSelection(entry.path)"

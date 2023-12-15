@@ -85,8 +85,10 @@
     <template #[`item.data-table-expand`]="row">
       <VIcon
         v-if="rawItemData(row).is_file"
-        :icon="row.isExpanded ? 'mdi-menu-down' : 'mdi-menu-up'"
-        @click="row.toggleExpand(row.item)"
+        :icon="
+          row.isExpanded(row.internalItem) ? 'mdi-menu-up' : 'mdi-menu-down'
+        "
+        @click="row.toggleExpand(row.internalItem)"
       />
     </template>
     <template #expanded-row="row">
@@ -98,8 +100,8 @@
         <td></td>
         <td>
           <VIcon icon="mdi-alpha-l" class="ml-1 mt-n1" />
-          <span class="mx-2">{{ entry.version_id }}</span
-          ><span class="ml-2 text-disabled">Version Id</span>
+          <span class="mx-2">{{ entry.version_id }}</span>
+          <span class="ml-2 text-disabled">Version Id</span>
         </td>
         <td>{{ rawItemData(row).item_type }}</td>
         <td>{{ parseDate(entry) }}</td>
@@ -116,7 +118,7 @@
               @click="downloadFile(entry.download_url)"
             />
             <RestoreButton
-              :item-key="entry.key"
+              :item-key="rawItemData(row).key"
               :version-id="entry.version_id"
               :is-delete-marker="entry.is_delete_marker"
             />

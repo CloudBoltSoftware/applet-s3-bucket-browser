@@ -3,7 +3,7 @@
   <VBtn
     icon="mdi-file-undo"
     :title="buttonText"
-    :disabled="isDeleteMarker"
+    :disabled="disableButton"
     @click="restoreItem"
   />
 </template>
@@ -43,12 +43,16 @@ const props = defineProps({
 const api = inject('api')
 const { bucketResource, refreshResource } = useBuckets(api)
 const restoreError = ref()
+const disableButton = computed(
+  () =>
+    props.isDeleteMarker || props.versionId == '' || props.versionId == 'null'
+)
 const buttonText = computed(() =>
   props.buttonShowId
     ? `Restore Latest Version [${props.versionId}]`
     : 'Restore File'
 )
-const retoreItemForm = computed(() => ({
+const restoreItemForm = computed(() => ({
   resource_id: bucketResource.value.id,
   version_id: props.versionId,
   key: props.itemKey
@@ -56,7 +60,7 @@ const retoreItemForm = computed(() => ({
 
 const restoreItem = async () => {
   try {
-    const formData = convertObjectToFormData(retoreItemForm.value)
+    const formData = convertObjectToFormData(restoreItemForm.value)
     await api.v3.cmp.inboundWebHooks.runPost(
       's3_bucket_browser/promote_version',
       formData
