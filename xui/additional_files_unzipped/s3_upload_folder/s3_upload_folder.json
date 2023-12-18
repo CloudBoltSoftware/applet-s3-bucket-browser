@@ -1,0 +1,11 @@
+{
+  "action_input_default_values": [],
+  "authentication_method": "normal",
+  "base_action_name": "S3 Upload Folder",
+  "id": "IWH-hp0iw13n",
+  "label": "S3 Upload Folder",
+  "last_updated": "2023-12-15",
+  "maximum_version_required": "",
+  "minimum_version_required": "8.6",
+  "uri_path": "s3_bucket_browser/upload_folder"
+}

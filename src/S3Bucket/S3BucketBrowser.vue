@@ -33,6 +33,7 @@
       :text="showError"
     />
     <BucketDisplay v-if="bucketResource" />
+    <VSkeletonLoader v-else type="table-heading, table-tbody"></VSkeletonLoader>
   </VSheet>
 </template>
 
