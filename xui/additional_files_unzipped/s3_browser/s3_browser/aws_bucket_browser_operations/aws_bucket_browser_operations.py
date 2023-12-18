@@ -262,8 +262,8 @@ def is_versioning_enabled(s3_client, resource_id, default_region):
 
     This function attempts to fetch a resource and its associated AWSHandler based on the provided
     `resource_id`. It then tries to access a custom field named "s3_bucket_region" and use its value
-    to create an S3 resource client. Finally, it checks whether versioning is enabled for the S3 bucket
-    associated with the resource.
+    (or a default) to create an S3 resource client. Finally, it checks whether versioning is enabled
+    for the S3 bucket associated with the resource.
 
     Parameters:
     - s3_client (boto3.client): A boto3 S3 client.
@@ -281,16 +281,20 @@ def is_versioning_enabled(s3_client, resource_id, default_region):
         # Get the resource by ID
         resource = get_object_or_404(Resource, pk=resource_id)
         aws = get_object_or_404(AWSHandler, pk=resource.aws_rh_id)
-
+        logger.info(
+            f"Checking if Bucket Versioning is enabled for the bucket '{resource.name}' "
+        )
         # Get the region from the resource
         s3rcf = CustomField.objects.get(name="s3_bucket_region")
 
         region_attribute = resource.attributes.get(field_id=s3rcf.id)
+        # default_region set from bucket_location in the inbound web hook 'S3 Browser'
         region = (
             region_attribute.str_value
             if region_attribute and region_attribute.str_value
             else default_region
-        )  # default_region set from bucket_location in IWH 'S3 Browser'
+        )
+
         # Get a boto3 resource wrapper for "bucket"
         s3_bucket = aws.get_boto3_resource(region_name=region, service_name="s3")
 
@@ -299,15 +303,20 @@ def is_versioning_enabled(s3_client, resource_id, default_region):
         return False
 
     except (CustomField.DoesNotExist, CustomFieldValue.DoesNotExist) as error:
-        # This error can arise when s3 buckets are added from discovery and their s3_bucket_region parmeter is not set. As a backup, attempt to find versioning info using the default region
-        logger.warning(
-            f"CustomField 's3_bucket_region' does not exist. Trying default_region={default_region}"
+        logger.warning("CustomField 's3_bucket_region' does not exist")
+        logger.info(
+            "This error can arise when s3 buckets are added from discovery and their s3_bucket_region parmeter is not set."
         )
+        logger.info(
+            f"As a backup, attempting to connect to the AWS Resource client using the default region='{default_region}'."
+        )
+        # Please make sure the default_region is a valid option for the AWS account
         s3_bucket = aws.get_boto3_resource(
             region_name=default_region, service_name="s3"
         )
 
         if s3_bucket.BucketVersioning(resource.name).status == "Enabled":
+            logger.info("Connected to the AWS Resource client")
             return True
         return False
     except Exception as e:

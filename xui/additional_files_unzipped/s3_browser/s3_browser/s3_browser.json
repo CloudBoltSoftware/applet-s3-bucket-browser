@@ -1,13 +1,13 @@
 {
   "description": null,
   "id": "OHK-ik89lihq",
-  "last_updated": "2023-12-15",
+  "last_updated": "2023-12-18",
   "max_retries": 0,
   "maximum_version_required": "",
   "minimum_version_required": "8.6",
   "name": "S3 Browser",
   "resource_technologies": [],
-  "script_filename": "cb_plugin_190_7WqhRtr_MfFwRdc_Ppaj1FM.py",
+  "script_filename": "cb_plugin_190_7WqhRtr_MfFwRdc_Ppaj1FM_YeZ9Oa1.py",
   "shared": false,
   "shared_module_dependencies": [
     "shared_module_aws_bucket_browser_operations.zip"

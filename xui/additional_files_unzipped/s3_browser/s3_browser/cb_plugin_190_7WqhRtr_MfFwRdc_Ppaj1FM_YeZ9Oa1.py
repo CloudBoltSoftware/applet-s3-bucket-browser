@@ -66,7 +66,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
         # If no folder path is provided, add the root path to path_dirs
         path_dirs.append({"name": "", "path": ""})
 
-    # Declare region as "bucket_location" and set default region (ships as 'us-east-1')
+    # Declare region as "bucket_location" and set default_region (ships as 'us-east-1')
     bucket_location = ""
     try:
         location_obj = s3_client.get_bucket_location(Bucket=resource.name)
@@ -74,7 +74,7 @@ def inbound_web_hook_post(*args, parameters={}, **kwargs):
             location_obj["LocationConstraint"]
             if not location_obj["LocationConstraint"] == None
             else "us-east-1"
-        )
+        )  # default_region set here
     except Exception as e:
         logger.exception("Could not set bucket_location. Please check s3 bucket region")
 
